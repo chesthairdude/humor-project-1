@@ -77,6 +77,10 @@ export default function MyStatsView({
 }) {
   const consensus = getConsensusLabel(consensusPercent);
   const upvotePercent = totalRated > 0 ? Math.round((upvotes / totalRated) * 100) : 0;
+  const CHART_MAX_BAR_HEIGHT = 92;
+  const funnyBarHeight = Math.max(8, Math.round((upvotePercent / 100) * CHART_MAX_BAR_HEIGHT));
+  const notFunnyPercent = 100 - upvotePercent;
+  const notFunnyBarHeight = Math.max(8, Math.round((notFunnyPercent / 100) * CHART_MAX_BAR_HEIGHT));
 
   return (
     <>
@@ -169,34 +173,6 @@ export default function MyStatsView({
         </Link>
 
         <Link
-          href="/my-stats"
-          className="sidebar-nav-item active"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            padding: "10px 14px",
-            borderRadius: "12px",
-            border: "1px solid var(--glass-border)",
-            borderLeft: "3px solid #6478ff",
-            backgroundColor: "var(--nav-item-hover)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-            cursor: "pointer",
-            fontSize: "14px",
-            fontWeight: 500,
-            color: "var(--text-primary)",
-            textAlign: "left",
-            width: "100%",
-            textDecoration: "none",
-          }}
-        >
-          <span style={{ fontSize: "18px" }}>📊</span>
-          <span>My Stats</span>
-        </Link>
-
-        <Link
           href="/upload"
           className="sidebar-nav-item"
           style={{
@@ -222,6 +198,34 @@ export default function MyStatsView({
         >
           <span style={{ fontSize: "18px" }}>⬆️</span>
           <span>Upload</span>
+        </Link>
+
+        <Link
+          href="/my-stats"
+          className="sidebar-nav-item active"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "10px 14px",
+            borderRadius: "12px",
+            border: "1px solid var(--glass-border)",
+            borderLeft: "3px solid #6478ff",
+            backgroundColor: "var(--nav-item-hover)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "var(--text-primary)",
+            textAlign: "left",
+            width: "100%",
+            textDecoration: "none",
+          }}
+        >
+          <span style={{ fontSize: "18px" }}>📊</span>
+          <span>My Stats</span>
         </Link>
 
         <form action="/auth/signout" method="post">
@@ -307,7 +311,7 @@ export default function MyStatsView({
                 sub={`${upvotePercent}% of your votes`}
               />
               <StatCard
-                emoji="💀"
+                emoji="😐"
                 label="Not Funny"
                 value={downvotes}
                 valueColor="#FF4458"
@@ -345,8 +349,7 @@ export default function MyStatsView({
                     <div
                       style={{
                         width: "56px",
-                        height: `${Math.max(8, Math.round(upvotePercent))}%`,
-                        maxHeight: "100%",
+                        height: `${funnyBarHeight}px`,
                         borderRadius: "12px 12px 6px 6px",
                         background: "linear-gradient(180deg, #a8ff78 0%, #4CDE80 100%)",
                         transition: "height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
@@ -359,20 +362,19 @@ export default function MyStatsView({
 
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
                     <span style={{ fontSize: "12px", fontWeight: 700, color: "#FF4458", marginBottom: "8px" }}>
-                      {100 - upvotePercent}%
+                      {notFunnyPercent}%
                     </span>
                     <div
                       style={{
                         width: "56px",
-                        height: `${Math.max(8, Math.round(100 - upvotePercent))}%`,
-                        maxHeight: "100%",
+                        height: `${notFunnyBarHeight}px`,
                         borderRadius: "12px 12px 6px 6px",
                         background: "linear-gradient(180deg, #ff8a97 0%, #FF4458 100%)",
                         transition: "height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }}
                     />
                     <span style={{ fontSize: "11px", fontWeight: 700, color: "#FF4458", marginTop: "8px" }}>
-                      Not Funny 💀
+                      Not Funny 😐
                     </span>
                   </div>
                 </div>
@@ -410,32 +412,26 @@ export default function MyStatsView({
 
                 <p
                   style={{
-                    fontSize: "22px",
+                    fontSize: "18px",
                     fontWeight: 700,
                     letterSpacing: "-0.02em",
                     color: "var(--text-primary)",
                     marginBottom: "4px",
                   }}
                 >
-                  {consensusPercent !== null ? `${consensusPercent}% agreeability` : "—"}
+                  {consensus.label}
                 </p>
 
                 <p
                   style={{
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    color: "var(--text-secondary)",
-                    marginBottom: "12px",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    color: "var(--text-tertiary)",
+                    marginBottom: "0",
                   }}
                 >
-                  {consensus.label}
+                  {consensusPercent !== null ? `${consensusPercent}% agreeability` : "—"}
                 </p>
-
-                {validConsensusVotes > 0 ? (
-                  <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                    Based on {validConsensusVotes} votes with a clear majority
-                  </p>
-                ) : null}
               </div>
             </div>
           </div>
