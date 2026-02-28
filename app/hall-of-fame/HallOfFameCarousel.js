@@ -240,8 +240,9 @@ export default function HallOfFameCarousel({ items = [] }) {
           style={{
             position: "fixed",
             bottom: "32px",
-            left: "220px",
-            right: 0,
+            left: "calc(220px + ((100vw - 220px) / 2))",
+            transform: "translateX(-50%)",
+            height: "fit-content",
             display: "flex",
             gap: "20px",
             alignItems: "center",
@@ -255,6 +256,7 @@ export default function HallOfFameCarousel({ items = [] }) {
             disabled={animating}
             style={{
               pointerEvents: "all",
+              flexShrink: 0,
               width: "52px",
               height: "52px",
               borderRadius: "50%",
@@ -315,6 +317,7 @@ export default function HallOfFameCarousel({ items = [] }) {
             disabled={animating}
             style={{
               pointerEvents: "all",
+              flexShrink: 0,
               width: "52px",
               height: "52px",
               borderRadius: "50%",

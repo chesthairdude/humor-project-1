@@ -802,8 +802,9 @@ export default function VoteDeck({ initialItems = [] }) {
             style={{
               position: "fixed",
               bottom: "32px",
-              left: "220px",
-              right: 0,
+              left: "calc(220px + ((100vw - 220px) / 2))",
+              transform: "translateX(-50%)",
+              height: "fit-content",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -817,10 +818,11 @@ export default function VoteDeck({ initialItems = [] }) {
               onClick={() => submitVote(-1, "left")}
               disabled={isSubmitting}
               aria-label="Dislike"
-              style={{
-                pointerEvents: "all",
-                width: "80px",
-                height: "80px",
+                style={{
+                  pointerEvents: "all",
+                  flexShrink: 0,
+                  width: "80px",
+                  height: "80px",
                 borderRadius: "50%",
                 border: "2.5px solid #FF4458",
                 backgroundColor: isDark ? "#FF4458" : "rgba(255,255,255,0.7)",
@@ -854,10 +856,11 @@ export default function VoteDeck({ initialItems = [] }) {
               onClick={() => submitVote(1, "right")}
               disabled={isSubmitting}
               aria-label="Like"
-              style={{
-                pointerEvents: "all",
-                width: "80px",
-                height: "80px",
+                style={{
+                  pointerEvents: "all",
+                  flexShrink: 0,
+                  width: "80px",
+                  height: "80px",
                 borderRadius: "50%",
                 border: "2.5px solid #4CDE80",
                 backgroundColor: isDark ? "#4CDE80" : "rgba(255,255,255,0.7)",
