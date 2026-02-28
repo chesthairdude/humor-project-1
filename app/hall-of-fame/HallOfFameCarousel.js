@@ -54,7 +54,10 @@ export default function HallOfFameCarousel({ items = [] }) {
         alignItems: "center",
         width: "100%",
         maxWidth: "420px",
-        height: "700px",
+        height: "100vh",
+        paddingTop: "32px",
+        paddingBottom: "32px",
+        boxSizing: "border-box",
       }}
     >
       <div style={{ display: "flex", gap: "6px", alignItems: "center", flexShrink: 0, marginBottom: "12px" }}>
@@ -71,16 +74,16 @@ export default function HallOfFameCarousel({ items = [] }) {
         {current.rank === 1 ? <span style={{ fontSize: "18px" }}>👑</span> : null}
       </div>
 
+      <div style={{ flex: 1, minHeight: 0 }} />
+
       <div
         style={{
           width: "100%",
-          height: "520px",
           borderRadius: "20px",
           background: "var(--card-bg)",
           border: "1px solid var(--card-border)",
           boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.10)",
           overflow: "hidden",
-          flexShrink: 0,
           transform: animating
             ? direction === "right"
               ? "translateX(-40px)"
@@ -93,26 +96,19 @@ export default function HallOfFameCarousel({ items = [] }) {
         <div
           style={{
             width: "100%",
-            height: "340px",
             backgroundColor: "var(--card-bg)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            overflow: "hidden",
-            flexShrink: 0,
-            borderRadius: "20px 20px 0 0",
           }}
         >
           <img
             src={current.imageUrl}
             alt="Hall of fame"
             style={{
-              maxWidth: "100%",
-              maxHeight: "100%",
+              width: "100%",
+              height: "auto",
               objectFit: "contain",
-              objectPosition: "center",
-              backgroundColor: "var(--card-bg)",
-              borderRadius: "20px 20px 0 0",
               display: "block",
             }}
           />
@@ -120,12 +116,7 @@ export default function HallOfFameCarousel({ items = [] }) {
 
         <div
           style={{
-            height: "180px",
-            padding: "16px 24px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            overflow: "hidden",
+            padding: "20px 24px 24px",
           }}
         >
           <p
@@ -135,11 +126,7 @@ export default function HallOfFameCarousel({ items = [] }) {
               fontWeight: 600,
               color: "var(--text-primary)",
               lineHeight: 1.5,
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              margin: 0,
+              marginBottom: "20px",
             }}
           >
             {current.captionContent}
@@ -156,44 +143,47 @@ export default function HallOfFameCarousel({ items = [] }) {
             }}
           >
             <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: "18px", fontWeight: 700, color: "#4CDE80" }}>{current.likes}</p>
+              <p style={{ fontSize: "18px", fontWeight: 700, color: "#4CDE80", margin: 0 }}>{current.likes}</p>
               <p
                 style={{
                   fontSize: "10px",
                   fontWeight: 600,
-                  color: "var(--text-tertiary)",
+                  color: "#aaa",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
+                  margin: 0,
                 }}
               >
                 Funny
               </p>
             </div>
             <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)" }}>
+              <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
                 {Math.round(current.ratio * 100)}%
               </p>
               <p
                 style={{
                   fontSize: "10px",
                   fontWeight: 600,
-                  color: "var(--text-tertiary)",
+                  color: "#aaa",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
+                  margin: 0,
                 }}
               >
                 Funny Rate
               </p>
             </div>
             <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: "18px", fontWeight: 700, color: "#FF4458" }}>{current.dislikes}</p>
+              <p style={{ fontSize: "18px", fontWeight: 700, color: "#FF4458", margin: 0 }}>{current.dislikes}</p>
               <p
                 style={{
                   fontSize: "10px",
                   fontWeight: 600,
-                  color: "var(--text-tertiary)",
+                  color: "#aaa",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
+                  margin: 0,
                 }}
               >
                 Not Funny
@@ -203,7 +193,7 @@ export default function HallOfFameCarousel({ items = [] }) {
         </div>
       </div>
 
-      <div style={{ marginTop: "auto", display: "flex", gap: "20px", alignItems: "center", flexShrink: 0 }}>
+      <div style={{ flexShrink: 0, paddingTop: "24px", display: "flex", gap: "20px", alignItems: "center" }}>
         <button
           onClick={() => navigate("left")}
           disabled={animating}
