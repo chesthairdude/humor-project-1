@@ -6,6 +6,7 @@ import { useTheme } from "../providers/ThemeProvider";
 
 const SWIPE_DURATION_MS = 320;
 const METER_TRANSITION = "width 0.75s cubic-bezier(0.34, 1.56, 0.64, 1)";
+const SWIPE_THRESHOLD = 100;
 let cachedVoteItems = null;
 
 export function setCachedVoteItems(items) {
@@ -44,6 +45,8 @@ export default function VoteDeck({ initialItems = [] }) {
   const sentimentTimerRef = useRef(null);
   const likeCountRef = useRef(0);
   const dislikeCountRef = useRef(0);
+  const dragRef = useRef({ dragging: false, startX: 0, currentX: 0 });
+  const cardRef = useRef(null);
 
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
@@ -54,6 +57,7 @@ export default function VoteDeck({ initialItems = [] }) {
   const [mouseY, setMouseY] = useState(50);
   const [tiltX, setTiltX] = useState(0);
   const [tiltY, setTiltY] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
 
   const current = useMemo(() => items[0] ?? null, [items]);
   const rawCaptionText =
@@ -69,6 +73,8 @@ export default function VoteDeck({ initialItems = [] }) {
 
   useEffect(() => {
     setSwipeDirection(null);
+    dragRef.current = { dragging: false, startX: 0, currentX: 0 };
+    setDragOffset(0);
   }, [current?.captionId]);
 
   useEffect(() => {
@@ -112,6 +118,35 @@ export default function VoteDeck({ initialItems = [] }) {
       active = false;
     };
   }, [current?.captionId, supabase]);
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (
+        event.target instanceof HTMLElement &&
+        (event.target.tagName === "INPUT" ||
+          event.target.tagName === "TEXTAREA" ||
+          event.target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (!current || isSubmittingRef.current) {
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        submitVote(1, "right");
+      }
+      if (event.key === "ArrowLeft") {
+        submitVote(-1, "left");
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [current, isSubmitting]);
 
   useEffect(() => {
     const nextSentiment = getSentimentCategory(funnyPercent);
@@ -192,6 +227,7 @@ export default function VoteDeck({ initialItems = [] }) {
     isSubmittingRef.current = true;
     setIsSubmitting(true);
     setError("");
+    setDragOffset(0);
     setSwipeDirection(direction);
 
     try {
@@ -238,6 +274,7 @@ export default function VoteDeck({ initialItems = [] }) {
 
       setItems((previous) => previous.slice(1));
     } catch (err) {
+      setDragOffset(0);
       setSwipeDirection(null);
       setError(err.message || "Failed to submit vote");
     } finally {
@@ -246,7 +283,10 @@ export default function VoteDeck({ initialItems = [] }) {
     }
   }
 
-  function handleMouseMove(event) {
+  function handleCardMouseMove(event) {
+    if (dragRef.current.dragging) {
+      return;
+    }
     const card = event.currentTarget;
     const rect = card.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -262,12 +302,117 @@ export default function VoteDeck({ initialItems = [] }) {
     setMouseY((y / rect.height) * 100);
   }
 
-  function handleMouseLeave() {
+  function handleCardMouseLeave() {
+    if (dragRef.current.dragging) {
+      dragRef.current.dragging = false;
+      if (cardRef.current) {
+        cardRef.current.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+      }
+      setDragOffset(0);
+    }
     setTiltX(0);
     setTiltY(0);
     setMouseX(50);
     setMouseY(50);
   }
+
+  function handleMouseDown(event) {
+    if (isSubmittingRef.current || swipeDirection) {
+      return;
+    }
+    dragRef.current = { dragging: true, startX: event.clientX, currentX: event.clientX };
+    if (cardRef.current) {
+      cardRef.current.style.transition = "none";
+    }
+  }
+
+  function handleWindowMouseMove(event) {
+    if (!dragRef.current.dragging) {
+      return;
+    }
+    dragRef.current.currentX = event.clientX;
+    const offset = event.clientX - dragRef.current.startX;
+    setDragOffset(offset);
+  }
+
+  function handleWindowMouseUp() {
+    if (!dragRef.current.dragging) {
+      return;
+    }
+    dragRef.current.dragging = false;
+
+    const offset = dragRef.current.currentX - dragRef.current.startX;
+
+    if (cardRef.current) {
+      cardRef.current.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+    }
+
+    if (offset > SWIPE_THRESHOLD) {
+      setDragOffset(0);
+      submitVote(1, "right");
+      return;
+    }
+    if (offset < -SWIPE_THRESHOLD) {
+      setDragOffset(0);
+      submitVote(-1, "left");
+      return;
+    }
+
+    setDragOffset(0);
+  }
+
+  function handleWindowMouseLeave() {
+    if (!dragRef.current.dragging) {
+      return;
+    }
+    dragRef.current.dragging = false;
+    if (cardRef.current) {
+      cardRef.current.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+    }
+    setDragOffset(0);
+  }
+
+  function handleTouchStart(event) {
+    if (isSubmittingRef.current || swipeDirection) {
+      return;
+    }
+    const point = event.touches?.[0];
+    if (!point) {
+      return;
+    }
+    dragRef.current = { dragging: true, startX: point.clientX, currentX: point.clientX };
+    if (cardRef.current) {
+      cardRef.current.style.transition = "none";
+    }
+  }
+
+  function handleTouchMove(event) {
+    if (!dragRef.current.dragging) {
+      return;
+    }
+    const point = event.touches?.[0];
+    if (!point) {
+      return;
+    }
+    dragRef.current.currentX = point.clientX;
+    const offset = point.clientX - dragRef.current.startX;
+    setDragOffset(offset);
+  }
+
+  function handleTouchEnd() {
+    handleWindowMouseUp();
+  }
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleWindowMouseMove);
+    window.addEventListener("mouseup", handleWindowMouseUp);
+    window.addEventListener("mouseleave", handleWindowMouseLeave);
+    return () => {
+      window.removeEventListener("mousemove", handleWindowMouseMove);
+      window.removeEventListener("mouseup", handleWindowMouseUp);
+      window.removeEventListener("mouseleave", handleWindowMouseLeave);
+    };
+  }, [current, isSubmitting, swipeDirection]);
 
   return (
     <section className="mx-auto w-full max-w-[400px]">
@@ -282,23 +427,48 @@ export default function VoteDeck({ initialItems = [] }) {
       ) : (
         <>
           <article
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+            ref={cardRef}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleCardMouseMove}
+            onMouseLeave={handleCardMouseLeave}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             className="vote-card swipe-card relative overflow-hidden"
             style={{
-              opacity: swipeDirection ? 0 : 1,
+              cursor: dragRef.current.dragging ? "grabbing" : "grab",
+              userSelect: "none",
+              opacity: swipeDirection ? 0 : Math.max(0, 1 - Math.abs(dragOffset) / 400),
               transform:
                 swipeDirection === "left"
-                  ? "translateX(-120%)"
+                  ? "translateX(-120%) rotate(-20deg)"
                   : swipeDirection === "right"
-                    ? "translateX(120%)"
-                    : `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`,
+                    ? "translateX(120%) rotate(20deg)"
+                    : `translateX(${dragOffset}px) rotate(${dragOffset * 0.05}deg) perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`,
               transition: swipeDirection
-                ? "transform 0.3s ease-out, opacity 0.3s ease-out"
-                : "transform 0.15s ease, opacity 0.15s ease",
+                ? "transform 0.32s ease, opacity 0.32s ease"
+                : dragRef.current.dragging
+                  ? "none"
+                  : "transform 0.3s ease, opacity 0.3s ease",
               transformStyle: "preserve-3d",
             }}
           >
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: "20px",
+                pointerEvents: "none",
+                zIndex: 9,
+                transition: "background 0.1s ease",
+                background:
+                  dragOffset > 50
+                    ? `rgba(76, 222, 128, ${Math.min((dragOffset - 50) / 150, 0.35)})`
+                    : dragOffset < -50
+                      ? `rgba(255, 68, 88, ${Math.min((-dragOffset - 50) / 150, 0.35)})`
+                      : "transparent",
+              }}
+            />
             <div
               style={{
                 position: "absolute",
@@ -309,6 +479,50 @@ export default function VoteDeck({ initialItems = [] }) {
                 zIndex: 10,
               }}
             />
+            {dragOffset > 50 ? (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "24px",
+                  left: "24px",
+                  padding: "6px 14px",
+                  borderRadius: "8px",
+                  border: "3px solid #4CDE80",
+                  color: "#4CDE80",
+                  fontSize: "22px",
+                  fontWeight: 800,
+                  letterSpacing: "0.05em",
+                  transform: "rotate(-15deg)",
+                  opacity: Math.min((dragOffset - 50) / 100, 1),
+                  pointerEvents: "none",
+                  zIndex: 11,
+                }}
+              >
+                FUNNY
+              </div>
+            ) : null}
+            {dragOffset < -50 ? (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "24px",
+                  right: "24px",
+                  padding: "6px 14px",
+                  borderRadius: "8px",
+                  border: "3px solid #FF4458",
+                  color: "#FF4458",
+                  fontSize: "22px",
+                  fontWeight: 800,
+                  letterSpacing: "0.05em",
+                  transform: "rotate(15deg)",
+                  opacity: Math.min((-dragOffset - 50) / 100, 1),
+                  pointerEvents: "none",
+                  zIndex: 11,
+                }}
+              >
+                NOPE
+              </div>
+            ) : null}
               <div className="w-full">
                 {current.imageUrl ? (
                   <div

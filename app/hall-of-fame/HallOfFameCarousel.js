@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function HallOfFameCarousel({ items = [] }) {
   const [index, setIndex] = useState(0);
@@ -26,6 +26,31 @@ export default function HallOfFameCarousel({ items = [] }) {
       setAnimating(false);
     }, 280);
   }
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (
+        event.target instanceof HTMLElement &&
+        (event.target.tagName === "INPUT" ||
+          event.target.tagName === "TEXTAREA" ||
+          event.target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        navigate("right");
+      }
+      if (event.key === "ArrowLeft") {
+        navigate("left");
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [animating, items.length]);
 
   if (!items.length) {
     return (
@@ -116,58 +141,64 @@ export default function HallOfFameCarousel({ items = [] }) {
 
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
                 padding: "12px 16px",
                 borderRadius: "12px",
                 background: "var(--stats-bg)",
                 border: "1px solid var(--stats-border)",
               }}
             >
-              <div style={{ textAlign: "center" }}>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "#4CDE80" }}>{current.likes}</p>
-                <p
-                  style={{
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    color: "var(--text-tertiary)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  Funny
-                </p>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "6px",
+                }}
+              >
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "#4CDE80" }}>
+                  😂 {current.likes} funny
+                </span>
+                <span style={{ fontSize: "11px", fontWeight: 700, color: "#FF4458" }}>
+                  {current.dislikes} not funny 😐
+                </span>
               </div>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "var(--text-primary)" }}>
-                  {Math.round(current.ratio * 100)}%
-                </p>
-                <p
+              <div
+                style={{
+                  position: "relative",
+                  height: "12px",
+                  width: "100%",
+                  borderRadius: "999px",
+                  background: "rgba(255, 68, 88, 0.45)",
+                  backdropFilter: "blur(16px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(16px) saturate(180%)",
+                  border: "1px solid var(--glass-border)",
+                  boxShadow: "inset 0 1px 3px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.08)",
+                  overflow: "hidden",
+                }}
+              >
+                <div
                   style={{
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    color: "var(--text-tertiary)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
+                    height: "100%",
+                    width: `${Math.round(current.ratio * 100)}%`,
+                    background: "#4CDE80",
+                    borderRadius: "999px",
+                    transition: "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   }}
-                >
-                  Funny Rate
-                </p>
+                />
               </div>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ fontSize: "18px", fontWeight: 700, color: "#FF4458" }}>{current.dislikes}</p>
-                <p
-                  style={{
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    color: "var(--text-tertiary)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  Not Funny
-                </p>
-              </div>
+              <p
+                style={{
+                  margin: "8px 0 0 0",
+                  textAlign: "center",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  color: "var(--text-primary)",
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {Math.round(current.ratio * 100)}% funny rate
+              </p>
             </div>
           </div>
         </div>

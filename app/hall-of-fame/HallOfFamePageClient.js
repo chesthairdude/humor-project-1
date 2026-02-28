@@ -379,7 +379,7 @@ export default function HallOfFamePageClient({ userEmail = "" }) {
                 The Funniest of All Time
               </h1>
               <p style={{ fontSize: "14px", color: "var(--text-secondary)", marginTop: "8px" }}>
-                Top 20 by community vote · minimum {averageVotesPerImage.toFixed(0)} votes
+                Top 20 by community vote · Minimum {averageVotesPerImage.toFixed(0)} votes
               </p>
             </div>
             <HallOfFameCarousel items={items} />
