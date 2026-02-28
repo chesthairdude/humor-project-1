@@ -6,7 +6,7 @@ import { useTheme } from "../providers/ThemeProvider";
 
 const SWIPE_DURATION_MS = 320;
 const METER_TRANSITION = "width 0.75s cubic-bezier(0.34, 1.56, 0.64, 1)";
-const SWIPE_THRESHOLD = 3;
+const SWIPE_THRESHOLD = 15;
 let cachedVoteItems = null;
 
 export function setCachedVoteItems(items) {
@@ -316,7 +316,7 @@ export default function VoteDeck({ initialItems = [] }) {
       dragRef.current.dragging = false;
       if (cardRef.current) {
         cardRef.current.style.transition = "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)";
-        cardRef.current.style.transform = "translateX(0)";
+        cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
         cardRef.current.style.willChange = "auto";
       }
       dragRef.current.offset = 0;
@@ -340,9 +340,14 @@ export default function VoteDeck({ initialItems = [] }) {
     if (isSubmittingRef.current || swipeDirection) {
       return;
     }
+    setTiltX(0);
+    setTiltY(0);
+    setMouseX(50);
+    setMouseY(50);
     if (cardRef.current) {
       cardRef.current.style.transition = "none";
       cardRef.current.style.willChange = "transform";
+      cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
     }
     dragRef.current = { dragging: true, startX: event.clientX, currentX: event.clientX, offset: 0 };
   }
@@ -433,7 +438,7 @@ export default function VoteDeck({ initialItems = [] }) {
     }
 
     if (cardRef.current) {
-      cardRef.current.style.transform = "translateX(0)";
+      cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
     }
     if (overlayRef.current) {
       overlayRef.current.style.background = "transparent";
@@ -454,7 +459,7 @@ export default function VoteDeck({ initialItems = [] }) {
     dragRef.current.dragging = false;
     if (cardRef.current) {
       cardRef.current.style.transition = "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)";
-      cardRef.current.style.transform = "translateX(0)";
+      cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
       cardRef.current.style.willChange = "auto";
     }
     if (overlayRef.current) {
@@ -477,9 +482,14 @@ export default function VoteDeck({ initialItems = [] }) {
     if (!point) {
       return;
     }
+    setTiltX(0);
+    setTiltY(0);
+    setMouseX(50);
+    setMouseY(50);
     if (cardRef.current) {
       cardRef.current.style.transition = "none";
       cardRef.current.style.willChange = "transform";
+      cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
     }
     dragRef.current = { dragging: true, startX: point.clientX, currentX: point.clientX, offset: 0 };
   }
