@@ -15,7 +15,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={geist.variable}>
-      <body>{children}</body>
+      <body style={{ fontFamily: "var(--font-geist-sans), -apple-system, sans-serif" }}>
+        {children}
+      </body>
     </html>
   );
 }

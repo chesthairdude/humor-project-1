@@ -15,7 +15,7 @@
 
   body {
     font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #f0f4ff 0%, #fafaff 50%, #f5f0ff 100%);
+    background: linear-gradient(135deg, #e8eeff 0%, #f5f5ff 40%, #ffe8f5 100%);
     color: #333333;
     min-height: 100vh;
   }

@@ -44,6 +44,10 @@ export default function VoteDeck({ initialItems = [] }) {
   const [meterAnimated, setMeterAnimated] = useState(false);
   const [sentiment, setSentiment] = useState(getSentimentCategory(50));
   const [sentimentVisible, setSentimentVisible] = useState(true);
+  const [mouseX, setMouseX] = useState(50);
+  const [mouseY, setMouseY] = useState(50);
+  const [tiltX, setTiltX] = useState(0);
+  const [tiltY, setTiltY] = useState(0);
 
   const current = useMemo(() => items[0] ?? null, [items]);
   const rawCaptionText =
@@ -245,6 +249,29 @@ export default function VoteDeck({ initialItems = [] }) {
     }
   }
 
+  function handleMouseMove(event) {
+    const card = event.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -8;
+    const rotateY = ((x - centerX) / centerX) * 8;
+
+    setTiltX(rotateX);
+    setTiltY(rotateY);
+    setMouseX((x / rect.width) * 100);
+    setMouseY((y / rect.height) * 100);
+  }
+
+  function handleMouseLeave() {
+    setTiltX(0);
+    setTiltY(0);
+    setMouseX(50);
+    setMouseY(50);
+  }
+
   return (
     <section className="mx-auto w-full max-w-[400px]">
       {initialItems.length === 0 ? (
@@ -258,43 +285,82 @@ export default function VoteDeck({ initialItems = [] }) {
       ) : (
         <>
           <article
-            className={`vote-card overflow-hidden transition-all duration-300 ease-out ${
-              swipeDirection === "left"
-                ? "-translate-x-[120%] opacity-0"
-                : swipeDirection === "right"
-                  ? "translate-x-[120%] opacity-0"
-                  : "translate-x-0 opacity-100"
-            }`}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className="vote-card relative overflow-hidden"
+            style={{
+              opacity: swipeDirection ? 0 : 1,
+              transform:
+                swipeDirection === "left"
+                  ? "translateX(-120%)"
+                  : swipeDirection === "right"
+                    ? "translateX(120%)"
+                    : `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`,
+              transition: swipeDirection
+                ? "transform 0.3s ease-out, opacity 0.3s ease-out"
+                : "transform 0.15s ease, opacity 0.15s ease",
+              transformStyle: "preserve-3d",
+            }}
           >
-              <div className="h-[420px] w-full">
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                borderRadius: "20px",
+                background: `radial-gradient(circle at ${mouseX}% ${mouseY}%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
+                pointerEvents: "none",
+                zIndex: 10,
+              }}
+            />
+              <div className="h-[480px] w-full">
               {current.imageUrl ? (
                 <img
                   src={current.imageUrl}
                   alt="Caption candidate"
-                  className="h-[65%] w-full rounded-t-[20px] object-cover"
+                  className="h-[60%] w-full rounded-t-[20px] object-cover"
                 />
               ) : (
-                <div className="flex h-[65%] w-full items-center justify-center rounded-t-[20px] bg-slate-100 text-sm text-slate-500">
+                <div className="flex h-[60%] w-full items-center justify-center rounded-t-[20px] bg-slate-100 text-sm text-slate-500">
                   Missing image
                 </div>
               )}
-                <div className="flex h-[35%] items-center justify-center px-5 pb-5 pt-4">
-                  <p className="text-center text-[18px] font-semibold leading-snug text-[#333333]">
+                <div className="flex h-[40%] items-center justify-center px-6 pb-6 pt-6">
+                  <p
+                    style={{
+                      textAlign: "center",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      lineHeight: 1.5,
+                      color: "#1a1a1a",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
                     {captionText || `Caption unavailable (${current.captionId})`}
                   </p>
                 </div>
               </div>
             </article>
 
-          <div className="mt-4 w-full">
+          <div style={{ marginTop: "12px", marginBottom: "4px", width: "100%", minHeight: "12px" }}>
             <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wide leading-none">
               <span className="text-[#4CDE80]">😂 {likeCount} funny</span>
               <span className="text-[#FF4458]">{dislikeCount} not funny 💀</span>
             </div>
-            <div className="relative h-3 w-full overflow-hidden rounded-[999px] bg-[#FF4458]">
+            <div
+              style={{
+                position: "relative",
+                height: "12px",
+                width: "100%",
+                borderRadius: "999px",
+                backgroundColor: "#FF4458",
+                overflow: "hidden",
+              }}
+            >
               <div
-                className="h-full bg-[#4CDE80]"
                 style={{
+                  height: "100%",
+                  backgroundColor: "#4CDE80",
+                  borderRadius: "999px",
                   width: `${funnyPercent}%`,
                   transition: meterAnimated ? METER_TRANSITION : "none",
                 }}
@@ -315,7 +381,34 @@ export default function VoteDeck({ initialItems = [] }) {
               onClick={() => submitVote(-1, "left")}
               disabled={isSubmitting}
               aria-label="Dislike"
-              className="group flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#FF4458] bg-white text-3xl font-bold text-[#FF4458] transition-transform duration-200 hover:scale-110 hover:bg-[#FF4458] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                width: "80px",
+                height: "80px",
+                borderRadius: "50%",
+                border: "2.5px solid #FF4458",
+                backgroundColor: "rgba(255,255,255,0.7)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                fontSize: "28px",
+                color: "#FF4458",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+                boxShadow: "0 4px 16px rgba(255,68,88,0.2)",
+                opacity: isSubmitting ? 0.6 : 1,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#FF4458";
+                e.currentTarget.style.color = "#fff";
+                e.currentTarget.style.transform = "scale(1.12)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)";
+                e.currentTarget.style.color = "#FF4458";
+                e.currentTarget.style.transform = "scale(1)";
+              }}
             >
               ✕
             </button>
@@ -324,7 +417,34 @@ export default function VoteDeck({ initialItems = [] }) {
               onClick={() => submitVote(1, "right")}
               disabled={isSubmitting}
               aria-label="Like"
-              className="group flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#4CAF50] bg-white text-3xl font-bold text-[#4CAF50] transition-transform duration-200 hover:scale-110 hover:bg-[#4CAF50] hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                width: "80px",
+                height: "80px",
+                borderRadius: "50%",
+                border: "2.5px solid #4CDE80",
+                backgroundColor: "rgba(255,255,255,0.7)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                fontSize: "28px",
+                color: "#4CDE80",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.2s ease",
+                boxShadow: "0 4px 16px rgba(76,222,128,0.2)",
+                opacity: isSubmitting ? 0.6 : 1,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#4CDE80";
+                e.currentTarget.style.color = "#fff";
+                e.currentTarget.style.transform = "scale(1.12)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.7)";
+                e.currentTarget.style.color = "#4CDE80";
+                e.currentTarget.style.transform = "scale(1)";
+              }}
             >
               ✓
             </button>

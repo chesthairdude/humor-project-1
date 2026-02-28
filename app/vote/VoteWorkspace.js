@@ -8,55 +8,168 @@ export default function VoteWorkspace({ initialItems = [], userEmail = "" }) {
   const [mode, setMode] = useState("vote");
 
   return (
-    <main className="min-h-screen">
-      <aside className="sidebar w-[var(--sidebar-width)] px-3 py-6">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">FunnyOrNot</h1>
+    <main style={{ minHeight: "100vh" }}>
+      <aside
+        style={{
+          width: "220px",
+          height: "100vh",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          padding: "28px 16px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+          backdropFilter: "blur(32px) saturate(200%)",
+          WebkitBackdropFilter: "blur(32px) saturate(200%)",
+          borderRight: "1px solid rgba(255, 255, 255, 0.6)",
+          boxShadow: "inset 1px 0 0 rgba(255,255,255,0.7), 4px 0 32px rgba(0,0,0,0.05)",
+          zIndex: 40,
+        }}
+      >
+        <div style={{ marginBottom: "24px", paddingLeft: "8px" }}>
+          <h1 style={{ fontSize: "22px", fontWeight: 700, letterSpacing: "-0.03em", color: "#111" }}>
+            FunnyOrNot
+          </h1>
           {userEmail ? (
-            <p className="mt-2 truncate text-xs font-medium uppercase tracking-wide text-slate-400">
+            <p style={{ fontSize: "11px", color: "#999", marginTop: "2px", letterSpacing: "0.02em" }}>
               {userEmail}
             </p>
           ) : null}
         </div>
 
-        <nav className="space-y-3">
-          <button
-            type="button"
-            onClick={() => setMode("vote")}
-            className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-white/40"
-          >
-            <span className={`sidebar-icon ${mode === "vote" ? "active" : ""}`}>🗳️</span>
-            <span className="hidden text-xs font-medium uppercase tracking-wide text-slate-500 md:inline">
-              Voting
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("upload")}
-            className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-white/40"
-          >
-            <span className={`sidebar-icon ${mode === "upload" ? "active" : ""}`}>⬆️</span>
-            <span className="hidden text-xs font-medium uppercase tracking-wide text-slate-500 md:inline">
-              Uploading
-            </span>
-          </button>
-        </nav>
+        <button
+          type="button"
+          onClick={() => setMode("vote")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "10px 14px",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.5)",
+            backgroundColor: mode === "vote" ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.35)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            boxShadow:
+              mode === "vote" ? "0 4px 16px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.06)",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "#222",
+            transition: "all 0.18s ease",
+            textAlign: "left",
+            width: "100%",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.65)";
+            e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.10)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor =
+              mode === "vote" ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.35)";
+            e.currentTarget.style.boxShadow =
+              mode === "vote" ? "0 4px 16px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.06)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          <span style={{ fontSize: "18px" }}>🗳️</span>
+          <span>Voting</span>
+        </button>
 
-        <form action="/auth/signout" method="post" className="mt-8">
+        <button
+          type="button"
+          onClick={() => setMode("upload")}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: "10px 14px",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.5)",
+            backgroundColor: mode === "upload" ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.35)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            boxShadow:
+              mode === "upload" ? "0 4px 16px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.06)",
+            cursor: "pointer",
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "#222",
+            transition: "all 0.18s ease",
+            textAlign: "left",
+            width: "100%",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.65)";
+            e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.10)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor =
+              mode === "upload" ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.35)";
+            e.currentTarget.style.boxShadow =
+              mode === "upload" ? "0 4px 16px rgba(0,0,0,0.10)" : "0 1px 4px rgba(0,0,0,0.06)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          <span style={{ fontSize: "18px" }}>⬆️</span>
+          <span>Upload</span>
+        </button>
+
+        <form action="/auth/signout" method="post">
           <button
             type="submit"
-            className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-white/40"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px 14px",
+              borderRadius: "12px",
+              border: "1px solid rgba(255,255,255,0.5)",
+              backgroundColor: "rgba(255,255,255,0.35)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+              cursor: "pointer",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "#222",
+              transition: "all 0.18s ease",
+              textAlign: "left",
+              width: "100%",
+              marginTop: "8px",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.65)";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.10)";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.35)";
+              e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
           >
-            <span className="sidebar-icon">↩</span>
-            <span className="hidden text-xs font-medium uppercase tracking-wide text-slate-500 md:inline">
-              Sign Out
-            </span>
+            <span style={{ fontSize: "18px" }}>↩</span>
+            <span>Sign Out</span>
           </button>
         </form>
       </aside>
 
-      <section className="main-content">
-        <div className="mx-auto w-full max-w-[400px]">
+      <section
+        style={{
+          marginLeft: "220px",
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "32px 24px",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: "400px", margin: "0 auto" }}>
           {mode === "vote" ? <VoteDeck initialItems={initialItems} /> : <UploadPanel />}
         </div>
       </section>
