@@ -552,96 +552,108 @@ export default function VoteDeck({ initialItems = [] }) {
         </div>
       ) : (
         <>
-          <div style={{ flex: 1 }} />
-          <article
-            ref={cardRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleCardMouseMove}
-            onMouseLeave={handleCardMouseLeave}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            className="vote-card swipe-card relative overflow-hidden"
+          <div style={{ flex: 1, minHeight: "32px", maxHeight: "120px" }} />
+
+          <div
             style={{
-              touchAction: "none",
-              cursor: dragRef.current.dragging ? "grabbing" : "grab",
-              userSelect: "none",
-              opacity: swipeDirection ? 0 : undefined,
-              transform:
-                swipeDirection === "left"
-                  ? "translateX(-120%) rotate(-20deg)"
-                  : swipeDirection === "right"
-                    ? "translateX(120%) rotate(20deg)"
-                    : undefined,
-              transition: swipeDirection ? "transform 0.32s ease, opacity 0.32s ease" : undefined,
-              transformStyle: "preserve-3d",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              flexShrink: 0,
             }}
           >
-            <div
-              ref={overlayRef}
+            <article
+              ref={cardRef}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleCardMouseMove}
+              onMouseLeave={handleCardMouseLeave}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              className="vote-card swipe-card relative overflow-hidden"
               style={{
-                position: "absolute",
-                inset: 0,
-                borderRadius: "20px",
-                pointerEvents: "none",
-                zIndex: 9,
-                transition: "background 0.1s ease",
-                background: "transparent",
-              }}
-            />
-            <div
-              ref={specularRef}
-              style={{
-                position: "absolute",
-                inset: 0,
-                borderRadius: "20px",
-                background: "transparent",
-                pointerEvents: "none",
-                zIndex: 10,
-              }}
-            />
-            <div
-              ref={funnyStampRef}
-              style={{
-                position: "absolute",
-                top: "24px",
-                left: "24px",
-                padding: "6px 14px",
-                borderRadius: "8px",
-                border: "3px solid #4CDE80",
-                color: "#4CDE80",
-                fontSize: "22px",
-                fontWeight: 800,
-                letterSpacing: "0.05em",
-                transform: "rotate(-15deg)",
-                opacity: 0,
-                pointerEvents: "none",
-                zIndex: 11,
+                touchAction: "none",
+                cursor: dragRef.current.dragging ? "grabbing" : "grab",
+                userSelect: "none",
+                opacity: swipeDirection ? 0 : undefined,
+                transform:
+                  swipeDirection === "left"
+                    ? "translateX(-120%) rotate(-20deg)"
+                    : swipeDirection === "right"
+                      ? "translateX(120%) rotate(20deg)"
+                      : undefined,
+                transition: swipeDirection ? "transform 0.32s ease, opacity 0.32s ease" : undefined,
+                transformStyle: "preserve-3d",
+                width: "100%",
+                flexShrink: 0,
               }}
             >
-              FUNNY
-            </div>
-            <div
-              ref={nopeStampRef}
-              style={{
-                position: "absolute",
-                top: "24px",
-                right: "24px",
-                padding: "6px 14px",
-                borderRadius: "8px",
-                border: "3px solid #FF4458",
-                color: "#FF4458",
-                fontSize: "22px",
-                fontWeight: 800,
-                letterSpacing: "0.05em",
-                transform: "rotate(15deg)",
-                opacity: 0,
-                pointerEvents: "none",
-                zIndex: 11,
-              }}
-            >
-              NOPE
-            </div>
+              <div
+                ref={overlayRef}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "20px",
+                  pointerEvents: "none",
+                  zIndex: 9,
+                  transition: "background 0.1s ease",
+                  background: "transparent",
+                }}
+              />
+              <div
+                ref={specularRef}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: "20px",
+                  background: "transparent",
+                  pointerEvents: "none",
+                  zIndex: 10,
+                }}
+              />
+              <div
+                ref={funnyStampRef}
+                style={{
+                  position: "absolute",
+                  top: "24px",
+                  left: "24px",
+                  padding: "6px 14px",
+                  borderRadius: "8px",
+                  border: "3px solid #4CDE80",
+                  color: "#4CDE80",
+                  fontSize: "22px",
+                  fontWeight: 800,
+                  letterSpacing: "0.05em",
+                  transform: "rotate(-15deg)",
+                  opacity: 0,
+                  pointerEvents: "none",
+                  zIndex: 11,
+                }}
+              >
+                FUNNY
+              </div>
+              <div
+                ref={nopeStampRef}
+                style={{
+                  position: "absolute",
+                  top: "24px",
+                  right: "24px",
+                  padding: "6px 14px",
+                  borderRadius: "8px",
+                  border: "3px solid #FF4458",
+                  color: "#FF4458",
+                  fontSize: "22px",
+                  fontWeight: 800,
+                  letterSpacing: "0.05em",
+                  transform: "rotate(15deg)",
+                  opacity: 0,
+                  pointerEvents: "none",
+                  zIndex: 11,
+                }}
+              >
+                NOPE
+              </div>
               <div className="w-full">
                 {current.imageUrl ? (
                   <div
@@ -705,7 +717,7 @@ export default function VoteDeck({ initialItems = [] }) {
               </div>
             </article>
 
-          <div style={{ marginTop: "28px", width: "100%" }}>
+            <div style={{ marginTop: "20px", width: "100%", flexShrink: 0 }}>
             <div
               style={{
                 marginBottom: "8px",
@@ -807,95 +819,96 @@ export default function VoteDeck({ initialItems = [] }) {
             </div>
           </div>
 
-          <div
-            style={{
-              marginTop: "28px",
-              marginBottom: "32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "60px",
-              width: "100%",
-              flexShrink: 0,
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => submitVote(-1, "left")}
-              disabled={isSubmitting}
-              aria-label="Dislike"
+            <div
               style={{
-                flexShrink: 0,
-                width: "80px",
-                  height: "80px",
-                borderRadius: "50%",
-                border: "2.5px solid #FF4458",
-                backgroundColor: isDark ? "#FF4458" : "rgba(255,255,255,0.7)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                fontSize: "28px",
-                color: isDark ? "#fff" : "#FF4458",
-                cursor: isSubmitting ? "not-allowed" : "pointer",
+                marginTop: "28px",
+                marginBottom: 0,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                transition: "all 0.2s ease",
-                boxShadow: "0 4px 16px rgba(255,68,88,0.2)",
-                opacity: isSubmitting ? 0.6 : 1,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? "rgba(255,255,255,0.18)" : "#FF4458";
-                e.currentTarget.style.color = isDark ? "#FF4458" : "#fff";
-                e.currentTarget.style.transform = "scale(1.12)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? "#FF4458" : "rgba(255,255,255,0.7)";
-                e.currentTarget.style.color = isDark ? "#fff" : "#FF4458";
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              ✕
-            </button>
-            <button
-              type="button"
-              onClick={() => submitVote(1, "right")}
-              disabled={isSubmitting}
-              aria-label="Like"
-              style={{
+                gap: "60px",
+                width: "100%",
                 flexShrink: 0,
-                width: "80px",
-                  height: "80px",
-                borderRadius: "50%",
-                border: "2.5px solid #4CDE80",
-                backgroundColor: isDark ? "#4CDE80" : "rgba(255,255,255,0.7)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                fontSize: "28px",
-                color: isDark ? "#fff" : "#4CDE80",
-                cursor: isSubmitting ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s ease",
-                boxShadow: "0 4px 16px rgba(76,222,128,0.2)",
-                opacity: isSubmitting ? 0.6 : 1,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? "rgba(255,255,255,0.18)" : "#4CDE80";
-                e.currentTarget.style.color = isDark ? "#4CDE80" : "#fff";
-                e.currentTarget.style.transform = "scale(1.12)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? "#4CDE80" : "rgba(255,255,255,0.7)";
-                e.currentTarget.style.color = isDark ? "#fff" : "#4CDE80";
-                e.currentTarget.style.transform = "scale(1)";
               }}
             >
-              ✓
-            </button>
+              <button
+                type="button"
+                onClick={() => submitVote(-1, "left")}
+                disabled={isSubmitting}
+                aria-label="Dislike"
+                style={{
+                  flexShrink: 0,
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
+                  border: "2.5px solid #FF4458",
+                  backgroundColor: isDark ? "#FF4458" : "rgba(255,255,255,0.7)",
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
+                  fontSize: "28px",
+                  color: isDark ? "#fff" : "#FF4458",
+                  cursor: isSubmitting ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 4px 16px rgba(255,68,88,0.2)",
+                  opacity: isSubmitting ? 0.6 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = isDark ? "rgba(255,255,255,0.18)" : "#FF4458";
+                  e.currentTarget.style.color = isDark ? "#FF4458" : "#fff";
+                  e.currentTarget.style.transform = "scale(1.12)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = isDark ? "#FF4458" : "rgba(255,255,255,0.7)";
+                  e.currentTarget.style.color = isDark ? "#fff" : "#FF4458";
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                ✕
+              </button>
+              <button
+                type="button"
+                onClick={() => submitVote(1, "right")}
+                disabled={isSubmitting}
+                aria-label="Like"
+                style={{
+                  flexShrink: 0,
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
+                  border: "2.5px solid #4CDE80",
+                  backgroundColor: isDark ? "#4CDE80" : "rgba(255,255,255,0.7)",
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
+                  fontSize: "28px",
+                  color: isDark ? "#fff" : "#4CDE80",
+                  cursor: isSubmitting ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 4px 16px rgba(76,222,128,0.2)",
+                  opacity: isSubmitting ? 0.6 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = isDark ? "rgba(255,255,255,0.18)" : "#4CDE80";
+                  e.currentTarget.style.color = isDark ? "#4CDE80" : "#fff";
+                  e.currentTarget.style.transform = "scale(1.12)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = isDark ? "#4CDE80" : "rgba(255,255,255,0.7)";
+                  e.currentTarget.style.color = isDark ? "#fff" : "#4CDE80";
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                ✓
+              </button>
+            </div>
           </div>
 
-          <div style={{ flex: 1 }} />
+          <div style={{ height: "32px", flexShrink: 0 }} />
         </>
       )}
 
