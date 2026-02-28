@@ -280,27 +280,23 @@ export default function VoteDeck({ initialItems = [] }) {
           You have voted on all available captions.
         </div>
       ) : (
-        <section
+        <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            height: "700px",
             width: "100%",
             maxWidth: "420px",
-            height: "100vh",
-            paddingTop: "32px",
-            paddingBottom: "32px",
-            boxSizing: "border-box",
           }}
         >
-          <div style={{ flex: 1, minHeight: 0 }} />
-
           <article
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             className="vote-card swipe-card relative overflow-hidden"
             style={{
               width: "100%",
+              height: "480px",
               flexShrink: 0,
               opacity: swipeDirection ? 0 : 1,
               transform:
@@ -325,156 +321,191 @@ export default function VoteDeck({ initialItems = [] }) {
                 zIndex: 10,
               }}
             />
-            <div className="w-full">
-              {current.imageUrl ? (
+              <div className="w-full">
+                {current.imageUrl ? (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "340px",
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      overflow: "hidden",
+                      borderRadius: "20px 20px 0 0",
+                      backgroundColor: "var(--card-bg)",
+                    }}
+                  >
+                    <img
+                      src={current.imageUrl}
+                      alt="Caption candidate"
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        objectFit: "contain",
+                        objectPosition: "center",
+                        backgroundColor: "var(--card-bg)",
+                        borderRadius: "20px 20px 0 0",
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="flex w-full items-center justify-center rounded-t-[20px] text-sm"
+                    style={{
+                      height: "340px",
+                      flexShrink: 0,
+                      background: "var(--stats-bg)",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    Missing image
+                  </div>
+                )}
                 <div
                   style={{
-                    width: "100%",
-                    backgroundColor: "var(--card-bg)",
+                    height: "140px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    padding: "16px 32px",
+                    overflow: "hidden",
                   }}
                 >
-                  <img
-                    src={current.imageUrl}
-                    alt="Caption candidate"
+                  <p
                     style={{
-                      width: "100%",
-                      height: "auto",
-                      objectFit: "contain",
-                      display: "block",
-                      borderRadius: "20px 20px 0 0",
+                      textAlign: "center",
+                      fontSize: "17px",
+                      fontWeight: 600,
+                      lineHeight: 1.5,
+                      color: "var(--text-primary)",
+                      letterSpacing: "-0.01em",
+                      maxWidth: "320px",
+                      margin: "0 auto",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 4,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {captionText || `Caption unavailable (${current.captionId})`}
+                  </p>
+                </div>
+              </div>
+            </article>
+
+          <div style={{ width: "100%", marginTop: "20px", flexShrink: 0 }}>
+            <div
+              style={{
+                marginBottom: "8px",
+                width: "100%",
+                padding: "0 4px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "6px",
+                  padding: "0 2px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    color: hasVotes ? "#4CDE80" : "var(--text-tertiary)",
+                    letterSpacing: "0.02em",
+                    transition: "color 0.3s ease",
+                  }}
+                >
+                  😂 {likeCount} funny
+                </span>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    color: hasVotes ? "#FF4458" : "var(--text-tertiary)",
+                    letterSpacing: "0.02em",
+                    transition: "color 0.3s ease",
+                  }}
+                >
+                  {dislikeCount} not funny 😐
+                </span>
+              </div>
+
+              {!hasVotes ? (
+                <div
+                  style={{
+                    height: "14px",
+                    width: "100%",
+                    borderRadius: "999px",
+                    background: "var(--stats-bg)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    border: "1px solid var(--glass-border)",
+                    boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    position: "relative",
+                    height: "14px",
+                    width: "100%",
+                    borderRadius: "999px",
+                    background: "rgba(255, 68, 88, 0.45)",
+                    backdropFilter: "blur(16px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(16px) saturate(180%)",
+                    border: "1px solid var(--glass-border)",
+                    boxShadow:
+                      "inset 0 1px 3px rgba(0, 0, 0, 0.10), inset 0 -1px 0 rgba(255,255,255,0.4), 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0,0,0,0.04)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    className="laugh-meter-fill"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      height: "100%",
+                      width: `${funnyPercent}%`,
+                      background: "#4CDE80",
+                      borderRadius: "999px",
+                      transition: METER_TRANSITION,
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "1px",
+                      left: "6px",
+                      right: "6px",
+                      height: "4px",
+                      borderRadius: "999px",
+                      background:
+                        "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%)",
+                      pointerEvents: "none",
+                      zIndex: 2,
                     }}
                   />
                 </div>
-              ) : (
-                <div
-                  className="flex w-full items-center justify-center rounded-t-[20px] text-sm"
-                  style={{
-                    minHeight: "320px",
-                    background: "var(--stats-bg)",
-                    color: "var(--text-secondary)",
-                  }}
-                >
-                  Missing image
-                </div>
               )}
-              <div
-                style={{
-                  padding: "20px 32px 24px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <p
-                  style={{
-                    textAlign: "center",
-                    fontSize: "17px",
-                    fontWeight: 600,
-                    lineHeight: 1.5,
-                    color: "var(--text-primary)",
-                    margin: 0,
-                  }}
-                >
-                  {captionText || `Caption unavailable (${current.captionId})`}
-                </p>
-              </div>
             </div>
-          </article>
-
-          <div
-            style={{
-              flexShrink: 0,
-              width: "100%",
-              paddingTop: "20px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: "6px",
-              }}
-            >
-              <span style={{ fontSize: "11px", fontWeight: 700, color: hasVotes ? "#4CDE80" : "#aaa" }}>
-                😂 {likeCount} funny
-              </span>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: hasVotes ? "#FF4458" : "#aaa" }}>
-                {dislikeCount} not funny 😐
-              </span>
-            </div>
-
-            <div
-              style={{
-                position: "relative",
-                height: "14px",
-                width: "100%",
-                borderRadius: "999px",
-                background: hasVotes ? "rgba(255,255,255,0.18)" : "rgba(180,180,190,0.25)",
-                backdropFilter: "blur(16px) saturate(180%)",
-                WebkitBackdropFilter: "blur(16px) saturate(180%)",
-                border: "1px solid rgba(255,255,255,0.55)",
-                boxShadow: "inset 0 1px 3px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.08)",
-                overflow: "hidden",
-              }}
-            >
-              {hasVotes ? (
-                <div
-                  className="laugh-meter-fill"
-                  style={{
-                    height: "100%",
-                    width: `${funnyPercent}%`,
-                    background:
-                      "linear-gradient(90deg, #4CDE80 0%, #a8ff78 35%, #ffdd57 60%, #FF6B6B 85%, #FF4458 100%)",
-                    backgroundSize: "400px 100%",
-                    borderRadius: "999px",
-                    transition: METER_TRANSITION,
-                  }}
-                />
-              ) : null}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "1px",
-                  left: "6px",
-                  right: "6px",
-                  height: "4px",
-                  borderRadius: "999px",
-                  background: "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%)",
-                  pointerEvents: "none",
-                  zIndex: 2,
-                }}
-              />
-            </div>
-
-            <p
-              style={{
-                marginTop: "8px",
-                textAlign: "center",
-                fontSize: "13px",
-                fontWeight: 600,
-                color: hasVotes ? "var(--text-primary)" : "#bbb",
-                opacity: sentimentVisible ? 1 : 0,
-                transform: sentimentVisible ? "scale(1)" : "scale(0.88)",
-                transition: "opacity 0.2s ease, transform 0.2s ease",
-              }}
-            >
-              {hasVotes ? sentiment.label : "— no votes yet —"}
-            </p>
           </div>
 
           <div
             style={{
-              flexShrink: 0,
-              paddingTop: "28px",
+              marginTop: "auto",
+              paddingBottom: "8px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "60px",
               width: "100%",
+              flexShrink: 0,
             }}
           >
             <button
@@ -550,7 +581,7 @@ export default function VoteDeck({ initialItems = [] }) {
               ✓
             </button>
           </div>
-        </section>
+        </div>
       )}
 
       {error ? (
