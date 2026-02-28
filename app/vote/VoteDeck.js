@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "../../utils/supabase/client";
 
 const SWIPE_DURATION_MS = 320;
-const METER_TRANSITION = "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)";
+const METER_TRANSITION = "width 0.75s cubic-bezier(0.34, 1.56, 0.64, 1)";
 
 function getSentimentCategory(funnyPercent) {
   if (funnyPercent >= 75) {
@@ -35,6 +35,7 @@ export default function VoteDeck({ initialItems = [] }) {
   const [swipeDirection, setSwipeDirection] = useState(null);
   const isSubmittingRef = useRef(false);
   const sentimentTimerRef = useRef(null);
+  const meterFadeTimerRef = useRef(null);
   const likeCountRef = useRef(0);
   const dislikeCountRef = useRef(0);
 
@@ -44,6 +45,7 @@ export default function VoteDeck({ initialItems = [] }) {
   const [meterAnimated, setMeterAnimated] = useState(false);
   const [sentiment, setSentiment] = useState(getSentimentCategory(50));
   const [sentimentVisible, setSentimentVisible] = useState(true);
+  const [meterVisible, setMeterVisible] = useState(true);
   const [mouseX, setMouseX] = useState(50);
   const [mouseY, setMouseY] = useState(50);
   const [tiltX, setTiltX] = useState(0);
@@ -55,9 +57,26 @@ export default function VoteDeck({ initialItems = [] }) {
       ? ""
       : String(current.captionContent);
   const captionText = rawCaptionText.trim();
+  const hasVotes = likeCount + dislikeCount > 0;
 
   useEffect(() => {
     setSwipeDirection(null);
+  }, [current?.captionId]);
+
+  useEffect(() => {
+    setMeterVisible(false);
+    if (meterFadeTimerRef.current) {
+      clearTimeout(meterFadeTimerRef.current);
+    }
+    meterFadeTimerRef.current = setTimeout(() => {
+      setMeterVisible(true);
+    }, 200);
+
+    return () => {
+      if (meterFadeTimerRef.current) {
+        clearTimeout(meterFadeTimerRef.current);
+      }
+    };
   }, [current?.captionId]);
 
   useEffect(() => {
@@ -93,7 +112,6 @@ export default function VoteDeck({ initialItems = [] }) {
       dislikeCountRef.current = dislikes;
       setLikeCount(likes);
       setDislikeCount(dislikes);
-      setFunnyPercent(percent);
 
       requestAnimationFrame(() => {
         if (!active) {
@@ -137,6 +155,9 @@ export default function VoteDeck({ initialItems = [] }) {
     return () => {
       if (sentimentTimerRef.current) {
         clearTimeout(sentimentTimerRef.current);
+      }
+      if (meterFadeTimerRef.current) {
+        clearTimeout(meterFadeTimerRef.current);
       }
     };
   }, []);
@@ -341,37 +362,130 @@ export default function VoteDeck({ initialItems = [] }) {
               </div>
             </article>
 
-          <div style={{ marginTop: "12px", marginBottom: "4px", width: "100%", minHeight: "12px" }}>
-            <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wide leading-none">
-              <span className="text-[#4CDE80]">😂 {likeCount} funny</span>
-              <span className="text-[#FF4458]">{dislikeCount} not funny 💀</span>
-            </div>
+          <div
+            style={{
+              opacity: meterVisible ? 1 : 0,
+              transform: meterVisible ? "translateY(0)" : "translateY(4px)",
+              transition: "opacity 0.3s ease, transform 0.3s ease",
+            }}
+          >
             <div
               style={{
-                position: "relative",
-                height: "12px",
+                marginTop: "28px",
+                marginBottom: "8px",
                 width: "100%",
-                borderRadius: "999px",
-                backgroundColor: "#FF4458",
-                overflow: "hidden",
+                padding: "0 4px",
               }}
             >
               <div
                 style={{
-                  height: "100%",
-                  backgroundColor: "#4CDE80",
-                  borderRadius: "999px",
-                  width: `${funnyPercent}%`,
-                  transition: meterAnimated ? METER_TRANSITION : "none",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "6px",
+                  padding: "0 2px",
                 }}
-              />
+              >
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    color: hasVotes ? "#4CDE80" : "#aaa",
+                    letterSpacing: "0.02em",
+                    transition: "color 0.3s ease",
+                  }}
+                >
+                  😂 {likeCount} funny
+                </span>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    color: hasVotes ? "#FF4458" : "#aaa",
+                    letterSpacing: "0.02em",
+                    transition: "color 0.3s ease",
+                  }}
+                >
+                  {dislikeCount} not funny 💀
+                </span>
+              </div>
+
+              {!hasVotes ? (
+                <div
+                  style={{
+                    height: "14px",
+                    width: "100%",
+                    borderRadius: "999px",
+                    background: "rgba(180, 180, 190, 0.25)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.6)",
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    position: "relative",
+                    height: "14px",
+                    width: "100%",
+                    borderRadius: "999px",
+                    background: "rgba(255, 255, 255, 0.18)",
+                    backdropFilter: "blur(16px) saturate(180%)",
+                    WebkitBackdropFilter: "blur(16px) saturate(180%)",
+                    border: "1px solid rgba(255, 255, 255, 0.55)",
+                    boxShadow:
+                      "inset 0 1px 3px rgba(0, 0, 0, 0.10), inset 0 -1px 0 rgba(255,255,255,0.4), 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0,0,0,0.04)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      height: "100%",
+                      width: `${funnyPercent}%`,
+                      background:
+                        "linear-gradient(90deg, #4CDE80 0%, #a8ff78 35%, #ffdd57 60%, #FF6B6B 85%, #FF4458 100%)",
+                      backgroundSize: "400px 100%",
+                      borderRadius: "999px",
+                      transition: meterAnimated ? METER_TRANSITION : "none",
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "1px",
+                      left: "6px",
+                      right: "6px",
+                      height: "4px",
+                      borderRadius: "999px",
+                      background:
+                        "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%)",
+                      pointerEvents: "none",
+                      zIndex: 2,
+                    }}
+                  />
+                </div>
+              )}
             </div>
             <p
-              className={`mt-2 text-center text-sm font-bold text-slate-700 transition-all duration-150 ${
-                sentimentVisible ? "scale-100 opacity-100" : "scale-[0.85] opacity-0"
-              }`}
+              style={{
+                marginTop: "8px",
+                textAlign: "center",
+                fontSize: "13px",
+                fontWeight: 600,
+                color: hasVotes ? "#444" : "#bbb",
+                letterSpacing: "-0.01em",
+                opacity: sentimentVisible ? 1 : 0,
+                transform: sentimentVisible
+                  ? "scale(1) translateY(0)"
+                  : "scale(0.88) translateY(2px)",
+                transition: "opacity 0.2s ease, transform 0.2s ease",
+              }}
             >
-              {sentiment.label}
+              {hasVotes ? sentiment.label : "— no votes yet —"}
             </p>
           </div>
 

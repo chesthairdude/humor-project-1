@@ -169,7 +169,14 @@ export default function VoteWorkspace({ initialItems = [], userEmail = "" }) {
           padding: "32px 24px",
         }}
       >
-        <div style={{ width: "100%", maxWidth: "400px", margin: "0 auto" }}>
+        <div
+          style={{
+            width: "100%",
+            maxWidth: mode === "vote" ? "400px" : "900px",
+            margin: "0 auto",
+            transition: "max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          }}
+        >
           {mode === "vote" ? <VoteDeck initialItems={initialItems} /> : <UploadPanel />}
         </div>
       </section>

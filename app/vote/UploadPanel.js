@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createClient } from "../../utils/supabase/client";
 
 const API_BASE_URL = "https://api.almostcrackd.ai";
@@ -53,6 +53,22 @@ export default function UploadPanel() {
   const [pipelineError, setPipelineError] = useState("");
   const [generatedCaptions, setGeneratedCaptions] = useState([]);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [showResults, setShowResults] = useState(false);
+  const [localPreviewUrl, setLocalPreviewUrl] = useState("");
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setLocalPreviewUrl("");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setLocalPreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [selectedFile]);
 
   async function runCaptionPipeline() {
     if (!selectedFile) {
@@ -70,6 +86,7 @@ export default function UploadPanel() {
     setPipelineStatus("");
     setGeneratedCaptions([]);
     setUploadedImageUrl("");
+    setShowResults(false);
 
     try {
       setPipelineStatus("Getting auth session...");
@@ -189,6 +206,7 @@ export default function UploadPanel() {
 
       setUploadedImageUrl(cdnUrl);
       setGeneratedCaptions(normalizedCaptions);
+      setShowResults(true);
       setPipelineStatus(
         normalizedCaptions.length > 0
           ? `Generated ${normalizedCaptions.length} caption${normalizedCaptions.length === 1 ? "" : "s"}.`
@@ -203,84 +221,322 @@ export default function UploadPanel() {
   }
 
   return (
-    <section className="vote-card mx-auto w-full max-w-[400px] p-6">
-      <div className="space-y-5">
-        <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+    <div
+      style={{
+        width: "100%",
+        maxWidth: showResults ? "900px" : "480px",
+        transition: "max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      }}
+    >
+      {showResults ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "24px",
+            alignItems: "start",
+          }}
+        >
+          <div
+            style={{
+              background: "rgba(255,255,255,0.55)",
+              backdropFilter: "blur(32px) saturate(180%)",
+              WebkitBackdropFilter: "blur(32px) saturate(180%)",
+              borderRadius: "20px",
+              border: "1px solid rgba(255,255,255,0.65)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+              overflow: "hidden",
+              animation: "slideInLeft 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+            }}
+          >
+            <img
+              src={uploadedImageUrl || localPreviewUrl}
+              alt="Uploaded"
+              style={{ width: "100%", display: "block", borderRadius: "20px" }}
+            />
+          </div>
+
+          <div
+            style={{
+              background: "rgba(255,255,255,0.55)",
+              backdropFilter: "blur(32px) saturate(180%)",
+              WebkitBackdropFilter: "blur(32px) saturate(180%)",
+              borderRadius: "20px",
+              border: "1px solid rgba(255,255,255,0.65)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+              padding: "28px 24px",
+              animation: "slideInRight 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#aaa",
+                marginBottom: "16px",
+                fontFamily: "var(--font-geist-sans)",
+              }}
+            >
+              Generated Captions
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {generatedCaptions.map((record, index) => {
+                const text = getCaptionText(record);
+                return (
+                  <div
+                    key={record?.id ?? `${index}-${text}`}
+                    style={{
+                      padding: "14px 16px",
+                      borderRadius: "12px",
+                      background: "rgba(255,255,255,0.5)",
+                      border: "1px solid rgba(255,255,255,0.6)",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      color: "#222",
+                      lineHeight: 1.5,
+                      animation: `fadeInUp 0.4s ease ${index * 0.07}s both`,
+                    }}
+                  >
+                    {text || JSON.stringify(record)}
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowResults(false);
+                setSelectedFile(null);
+                setGeneratedCaptions([]);
+                setUploadedImageUrl("");
+                setPipelineError("");
+                setPipelineStatus("");
+              }}
+              style={{
+                marginTop: "20px",
+                width: "100%",
+                padding: "12px",
+                borderRadius: "12px",
+                border: "1px solid rgba(150,150,255,0.3)",
+                background: "rgba(255,255,255,0.4)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                color: "#666",
+                fontSize: "13px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+            >
+              ↩ Upload Another
+            </button>
+          </div>
+        </div>
+      ) : (
+        <section
+          style={{
+            width: "100%",
+            maxWidth: "480px",
+            background: "rgba(255, 255, 255, 0.55)",
+            backdropFilter: "blur(32px) saturate(180%)",
+            WebkitBackdropFilter: "blur(32px) saturate(180%)",
+            borderRadius: "24px",
+            border: "1px solid rgba(255, 255, 255, 0.65)",
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.8), 0 8px 32px rgba(0,0,0,0.08), 0 32px 64px rgba(0,0,0,0.06)",
+            padding: "36px 32px",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "10px",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "#aaa",
+              marginBottom: "10px",
+              fontFamily: "var(--font-geist-sans)",
+            }}
+          >
             Caption Pipeline
           </p>
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Upload Image And Generate Captions
-          </h2>
-        </div>
-
-        <div className="space-y-3">
-          <input
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/heic"
-            onChange={(event) => {
-              const file = event.target.files?.[0] ?? null;
-              setSelectedFile(file);
-              setPipelineError("");
+          <h1
+            style={{
+              fontSize: "26px",
+              fontWeight: 700,
+              letterSpacing: "-0.03em",
+              color: "#111",
+              lineHeight: 1.2,
+              marginBottom: "28px",
+              fontFamily: "var(--font-geist-sans)",
             }}
-            className="block w-full cursor-pointer rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-700 file:mr-4 file:rounded-full file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-800"
-          />
+          >
+            Upload Image &amp; Generate Captions
+          </h1>
+
+          <label
+            htmlFor="file-upload"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              width: "100%",
+              height: "120px",
+              borderRadius: "16px",
+              border: "2px dashed rgba(150, 150, 200, 0.35)",
+              background: "rgba(255,255,255,0.3)",
+              backdropFilter: "blur(8px)",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+              marginBottom: "16px",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.border = "2px dashed rgba(100,120,255,0.5)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.border = "2px dashed rgba(150,150,200,0.35)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.3)";
+            }}
+          >
+            <span style={{ fontSize: "28px" }}>🖼️</span>
+            <span style={{ fontSize: "13px", fontWeight: 500, color: "#888" }}>
+              {selectedFile ? selectedFile.name : "Click to choose a file"}
+            </span>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/heic"
+              style={{ display: "none" }}
+              onChange={(event) => {
+                const file = event.target.files?.[0] ?? null;
+                setSelectedFile(file);
+                setPipelineError("");
+              }}
+            />
+          </label>
+
           <button
             type="button"
             onClick={runCaptionPipeline}
             disabled={isGeneratingCaptions || !selectedFile}
-            className="rounded-full bg-slate-900 px-6 py-3 font-semibold text-white shadow-lg shadow-slate-300 transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: "14px",
+              border: "1px solid rgba(255,255,255,0.6)",
+              background:
+                selectedFile && !isGeneratingCaptions
+                  ? "linear-gradient(135deg, rgba(100,120,255,0.85), rgba(140,100,255,0.85))"
+                  : "rgba(200,200,210,0.3)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              color: selectedFile && !isGeneratingCaptions ? "#fff" : "#aaa",
+              fontSize: "15px",
+              fontWeight: 600,
+              letterSpacing: "-0.01em",
+              cursor: selectedFile && !isGeneratingCaptions ? "pointer" : "not-allowed",
+              transition: "all 0.2s ease",
+              boxShadow:
+                selectedFile && !isGeneratingCaptions
+                  ? "0 4px 20px rgba(100,120,255,0.3)"
+                  : "none",
+            }}
+            onMouseEnter={(e) => {
+              if (selectedFile && !isGeneratingCaptions) {
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
           >
             {isGeneratingCaptions ? "Generating..." : "Generate Captions"}
           </button>
-        </div>
 
-        {pipelineStatus ? (
-          <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-            {pipelineStatus}
-          </p>
-        ) : null}
+          {isGeneratingCaptions ? (
+            <div style={{ marginTop: "20px", width: "100%" }}>
+              <p
+                style={{
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  color: "#888",
+                  marginBottom: "8px",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Generating captions...
+              </p>
+              <div
+                style={{
+                  position: "relative",
+                  height: "10px",
+                  width: "100%",
+                  borderRadius: "999px",
+                  background: "rgba(255,255,255,0.2)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  border: "1px solid rgba(255,255,255,0.5)",
+                  boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.6)",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    height: "100%",
+                    width: "40%",
+                    borderRadius: "999px",
+                    background: "linear-gradient(90deg, #4facfe 0%, #00f2fe 50%, #4facfe 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.4s ease-in-out infinite",
+                    boxShadow: "0 0 12px rgba(79,172,254,0.6)",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "1px",
+                    left: "4px",
+                    right: "4px",
+                    height: "3px",
+                    borderRadius: "999px",
+                    background: "linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%)",
+                    pointerEvents: "none",
+                    zIndex: 2,
+                  }}
+                />
+              </div>
+            </div>
+          ) : null}
+        </section>
+      )}
 
-        {pipelineError ? (
-          <p className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-            {pipelineError}
-          </p>
-        ) : null}
-
-        {uploadedImageUrl ? (
-          <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-              Uploaded Image
-            </p>
-            <img
-              src={uploadedImageUrl}
-              alt="Uploaded preview"
-              className="max-h-64 w-full rounded-lg border border-slate-200 bg-white object-contain"
-            />
-          </div>
-        ) : null}
-
-        {generatedCaptions.length > 0 ? (
-          <div className="space-y-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-              Generated Captions
-            </p>
-            <ul className="space-y-3">
-              {generatedCaptions.map((record, index) => {
-                const text = getCaptionText(record);
-                return (
-                  <li
-                    key={record?.id ?? `${index}-${text}`}
-                    className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-800"
-                  >
-                    {text || JSON.stringify(record)}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ) : null}
-      </div>
-    </section>
+      {pipelineError ? (
+        <p
+          style={{
+            marginTop: "12px",
+            borderRadius: "12px",
+            border: "1px solid rgba(252, 165, 165, 0.9)",
+            background: "rgba(254, 242, 242, 0.85)",
+            padding: "10px 12px",
+            fontSize: "13px",
+            color: "#b91c1c",
+          }}
+        >
+          {pipelineError}
+        </p>
+      ) : null}
+    </div>
   );
 }
