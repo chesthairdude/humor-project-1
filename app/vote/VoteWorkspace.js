@@ -234,7 +234,7 @@ export default function VoteWorkspace({ initialItems = [], userEmail = "", initi
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "32px 24px 160px",
+          padding: "32px 24px",
         }}
       >
         {mode === "vote" ? (
@@ -264,6 +264,10 @@ export default function VoteWorkspace({ initialItems = [], userEmail = "", initi
               width: "100%",
               maxWidth: mode === "vote" ? "400px" : uploadExpanded ? "900px" : "480px",
               margin: "0 auto",
+              display: mode === "vote" ? "flex" : undefined,
+              flexDirection: mode === "vote" ? "column" : undefined,
+              alignItems: mode === "vote" ? "center" : undefined,
+              minHeight: mode === "vote" ? "calc(100vh - 64px)" : undefined,
               transition: "max-width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
           >

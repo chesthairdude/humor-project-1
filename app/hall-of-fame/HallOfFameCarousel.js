@@ -77,11 +77,12 @@ export default function HallOfFameCarousel({ items = [] }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "24px",
         width: "100%",
         maxWidth: "420px",
+        minHeight: "calc(100vh - 64px)",
       }}
     >
+        <div style={{ flex: 1 }} />
         <div
           style={{
             width: "100%",
@@ -238,24 +239,20 @@ export default function HallOfFameCarousel({ items = [] }) {
 
         <div
           style={{
-            position: "fixed",
-            bottom: "32px",
-            left: "calc(220px + ((100vw - 220px) / 2))",
-            transform: "translateX(-50%)",
-            height: "fit-content",
+            width: "100%",
+            marginTop: "24px",
+            marginBottom: "32px",
             display: "flex",
             gap: "20px",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 50,
-            pointerEvents: "none",
+            flexShrink: 0,
           }}
         >
           <button
             onClick={() => navigate("left")}
             disabled={animating}
             style={{
-              pointerEvents: "all",
               flexShrink: 0,
               width: "52px",
               height: "52px",
@@ -285,7 +282,7 @@ export default function HallOfFameCarousel({ items = [] }) {
             ←
           </button>
 
-          <div style={{ display: "flex", gap: "6px", pointerEvents: "all" }}>
+          <div style={{ display: "flex", gap: "6px" }}>
             {items.map((_, i) => (
               <div
                 key={i}
@@ -316,7 +313,6 @@ export default function HallOfFameCarousel({ items = [] }) {
             onClick={() => navigate("right")}
             disabled={animating}
             style={{
-              pointerEvents: "all",
               flexShrink: 0,
               width: "52px",
               height: "52px",

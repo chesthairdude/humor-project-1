@@ -343,13 +343,22 @@ export default function HallOfFamePageClient({ userEmail = "" }) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "40px 32px 160px",
+          padding: "40px 32px",
           background: "var(--bg-gradient)",
           fontFamily: "var(--font-geist-sans)",
         }}
       >
         <PageTransition>
-          <div>
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "420px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              minHeight: "calc(100vh - 80px)",
+            }}
+          >
             <div style={{ marginBottom: "10px", textAlign: "center" }}>
               <h1
                 style={{

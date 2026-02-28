@@ -533,7 +533,15 @@ export default function VoteDeck({ initialItems = [] }) {
   }, [swipeDirection]);
 
   return (
-    <section className="mx-auto w-full max-w-[400px]">
+    <section
+      className="mx-auto w-full max-w-[400px]"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        minHeight: "calc(100vh - 64px)",
+      }}
+    >
       {initialItems.length === 0 ? (
         <div className="vote-card p-6 text-center" style={{ color: "var(--text-secondary)" }}>
           No captions available yet.
@@ -544,6 +552,7 @@ export default function VoteDeck({ initialItems = [] }) {
         </div>
       ) : (
         <>
+          <div style={{ flex: 1 }} />
           <article
             ref={cardRef}
             onMouseDown={handleMouseDown}
@@ -800,17 +809,14 @@ export default function VoteDeck({ initialItems = [] }) {
 
           <div
             style={{
-              position: "fixed",
-              bottom: "32px",
-              left: "calc(220px + ((100vw - 220px) / 2))",
-              transform: "translateX(-50%)",
-              height: "fit-content",
+              marginTop: "28px",
+              marginBottom: "32px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: "60px",
-              zIndex: 50,
-              pointerEvents: "none",
+              width: "100%",
+              flexShrink: 0,
             }}
           >
             <button
@@ -818,10 +824,9 @@ export default function VoteDeck({ initialItems = [] }) {
               onClick={() => submitVote(-1, "left")}
               disabled={isSubmitting}
               aria-label="Dislike"
-                style={{
-                  pointerEvents: "all",
-                  flexShrink: 0,
-                  width: "80px",
+              style={{
+                flexShrink: 0,
+                width: "80px",
                   height: "80px",
                 borderRadius: "50%",
                 border: "2.5px solid #FF4458",
@@ -856,10 +861,9 @@ export default function VoteDeck({ initialItems = [] }) {
               onClick={() => submitVote(1, "right")}
               disabled={isSubmitting}
               aria-label="Like"
-                style={{
-                  pointerEvents: "all",
-                  flexShrink: 0,
-                  width: "80px",
+              style={{
+                flexShrink: 0,
+                width: "80px",
                   height: "80px",
                 borderRadius: "50%",
                 border: "2.5px solid #4CDE80",
