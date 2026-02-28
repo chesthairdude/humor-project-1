@@ -14,20 +14,132 @@ export default async function AuthPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-8">
-      <section className="vote-card w-full max-w-[400px] p-8">
-        <header className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">FunnyOrNot</h1>
-          <p className="mt-3 text-xs font-medium uppercase tracking-wide text-slate-400">
-            Sign in with Google to continue
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #e8eeff 0%, #f5f5ff 40%, #ffe8f5 100%)",
+        fontFamily: "var(--font-geist-sans)",
+        padding: "32px 16px",
+      }}
+    >
+      <section
+        style={{
+          width: "100%",
+          maxWidth: "420px",
+          padding: "44px 40px",
+          borderRadius: "28px",
+          background: "rgba(255, 255, 255, 0.55)",
+          backdropFilter: "blur(32px) saturate(180%)",
+          WebkitBackdropFilter: "blur(32px) saturate(180%)",
+          border: "1px solid rgba(255, 255, 255, 0.65)",
+          boxShadow:
+            "inset 0 1px 0 rgba(255,255,255,0.8), 0 8px 32px rgba(0,0,0,0.08), 0 32px 64px rgba(0,0,0,0.06)",
+          animation: "authCardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        }}
+      >
+        <div style={{ marginBottom: "32px", textAlign: "center" }}>
+          <p
+            style={{
+              fontSize: "10px",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "#aaa",
+              marginBottom: "8px",
+            }}
+          >
+            FunnyOrNot
           </p>
-        </header>
+          <h1
+            style={{
+              fontSize: "26px",
+              fontWeight: 700,
+              letterSpacing: "-0.03em",
+              color: "#111",
+              lineHeight: 1.2,
+              marginBottom: "8px",
+            }}
+          >
+            Welcome back
+          </h1>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#888",
+              fontWeight: 400,
+            }}
+          >
+            Sign in or create an account to start voting
+          </p>
+        </div>
 
         <a
           href="/auth/login"
-          className="block w-full rounded-2xl bg-gradient-to-r from-[#FF4458] to-[#FF6B6B] px-5 py-3 text-center text-base font-bold text-white shadow-lg shadow-rose-200 transition hover:brightness-105"
+          style={{
+            width: "100%",
+            padding: "14px",
+            borderRadius: "14px",
+            border: "1px solid rgba(255,255,255,0.6)",
+            background: "linear-gradient(135deg, rgba(100,120,255,0.85), rgba(140,100,255,0.85))",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            color: "#fff",
+            fontSize: "15px",
+            fontWeight: 600,
+            letterSpacing: "-0.01em",
+            cursor: "pointer",
+            marginBottom: "10px",
+            boxShadow: "0 4px 20px rgba(100,120,255,0.3)",
+            transition: "all 0.2s ease",
+            fontFamily: "var(--font-geist-sans)",
+            textDecoration: "none",
+            display: "block",
+            textAlign: "center",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
         >
-          Sign In with Google
+          Sign In
+        </a>
+
+        <a
+          href="/auth/login"
+          style={{
+            width: "100%",
+            padding: "14px",
+            borderRadius: "14px",
+            border: "1px solid rgba(180,180,210,0.4)",
+            background: "rgba(255,255,255,0.35)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            color: "#555",
+            fontSize: "15px",
+            fontWeight: 600,
+            letterSpacing: "-0.01em",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            fontFamily: "var(--font-geist-sans)",
+            textDecoration: "none",
+            display: "block",
+            textAlign: "center",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.6)";
+            e.currentTarget.style.transform = "translateY(-1px)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(255,255,255,0.35)";
+            e.currentTarget.style.transform = "translateY(0)";
+          }}
+        >
+          Create Account
         </a>
       </section>
     </main>

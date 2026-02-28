@@ -45,6 +45,15 @@ function getCaptionText(record) {
   return "";
 }
 
+function toFiveCaptions(records) {
+  const source = Array.isArray(records) ? records.slice(0, 5) : [];
+  const padded = [...source];
+  while (padded.length < 5) {
+    padded.push({ id: `placeholder-${padded.length}`, placeholder: true });
+  }
+  return padded;
+}
+
 export default function UploadPanel({ onResultsChange }) {
   const supabase = useMemo(() => createClient(), []);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -289,8 +298,9 @@ export default function UploadPanel({ onResultsChange }) {
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {generatedCaptions.map((record, index) => {
+              {toFiveCaptions(generatedCaptions).map((record, index) => {
                 const text = getCaptionText(record);
+                const isPlaceholder = Boolean(record?.placeholder);
                 return (
                   <div
                     key={record?.id ?? `${index}-${text}`}
@@ -302,12 +312,12 @@ export default function UploadPanel({ onResultsChange }) {
                       boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
                       fontSize: "14px",
                       fontWeight: 500,
-                      color: "#222",
+                      color: isPlaceholder ? "#9ca3af" : "#222",
                       lineHeight: 1.5,
                       animation: `fadeInUp 0.4s ease ${index * 0.07}s both`,
                     }}
                   >
-                    {text || JSON.stringify(record)}
+                    {isPlaceholder ? "Waiting for more captions..." : text || JSON.stringify(record)}
                   </div>
                 );
               })}

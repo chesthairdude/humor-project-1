@@ -35,17 +35,14 @@ export default function VoteDeck({ initialItems = [] }) {
   const [swipeDirection, setSwipeDirection] = useState(null);
   const isSubmittingRef = useRef(false);
   const sentimentTimerRef = useRef(null);
-  const meterFadeTimerRef = useRef(null);
   const likeCountRef = useRef(0);
   const dislikeCountRef = useRef(0);
 
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
   const [funnyPercent, setFunnyPercent] = useState(50);
-  const [meterAnimated, setMeterAnimated] = useState(false);
   const [sentiment, setSentiment] = useState(getSentimentCategory(50));
   const [sentimentVisible, setSentimentVisible] = useState(true);
-  const [meterVisible, setMeterVisible] = useState(true);
   const [mouseX, setMouseX] = useState(50);
   const [mouseY, setMouseY] = useState(50);
   const [tiltX, setTiltX] = useState(0);
@@ -64,22 +61,6 @@ export default function VoteDeck({ initialItems = [] }) {
   }, [current?.captionId]);
 
   useEffect(() => {
-    setMeterVisible(false);
-    if (meterFadeTimerRef.current) {
-      clearTimeout(meterFadeTimerRef.current);
-    }
-    meterFadeTimerRef.current = setTimeout(() => {
-      setMeterVisible(true);
-    }, 200);
-
-    return () => {
-      if (meterFadeTimerRef.current) {
-        clearTimeout(meterFadeTimerRef.current);
-      }
-    };
-  }, [current?.captionId]);
-
-  useEffect(() => {
     let active = true;
 
     async function loadVoteBreakdown() {
@@ -87,7 +68,6 @@ export default function VoteDeck({ initialItems = [] }) {
         return;
       }
 
-      setMeterAnimated(false);
       setFunnyPercent(50);
       likeCountRef.current = 0;
       dislikeCountRef.current = 0;
@@ -112,19 +92,7 @@ export default function VoteDeck({ initialItems = [] }) {
       dislikeCountRef.current = dislikes;
       setLikeCount(likes);
       setDislikeCount(dislikes);
-
-      requestAnimationFrame(() => {
-        if (!active) {
-          return;
-        }
-        setMeterAnimated(true);
-        requestAnimationFrame(() => {
-          if (!active) {
-            return;
-          }
-          setFunnyPercent(percent);
-        });
-      });
+      setFunnyPercent(percent);
     }
 
     loadVoteBreakdown();
@@ -155,9 +123,6 @@ export default function VoteDeck({ initialItems = [] }) {
     return () => {
       if (sentimentTimerRef.current) {
         clearTimeout(sentimentTimerRef.current);
-      }
-      if (meterFadeTimerRef.current) {
-        clearTimeout(meterFadeTimerRef.current);
       }
     };
   }, []);
@@ -362,16 +327,9 @@ export default function VoteDeck({ initialItems = [] }) {
               </div>
             </article>
 
-          <div
-            style={{
-              opacity: meterVisible ? 1 : 0,
-              transform: meterVisible ? "translateY(0)" : "translateY(4px)",
-              transition: "opacity 0.3s ease, transform 0.3s ease",
-            }}
-          >
+          <div style={{ marginTop: "28px", width: "100%" }}>
             <div
               style={{
-                marginTop: "28px",
                 marginBottom: "8px",
                 width: "100%",
                 padding: "0 4px",
@@ -448,7 +406,7 @@ export default function VoteDeck({ initialItems = [] }) {
                       width: `${funnyPercent}%`,
                       background: "#4CDE80",
                       borderRadius: "999px",
-                      transition: meterAnimated ? METER_TRANSITION : "none",
+                      transition: METER_TRANSITION,
                     }}
                   />
                   <div
@@ -470,7 +428,7 @@ export default function VoteDeck({ initialItems = [] }) {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-center gap-[60px]">
+          <div className="mt-10 flex items-center justify-center gap-[60px]">
             <button
               type="button"
               onClick={() => submitVote(-1, "left")}
