@@ -1,51 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "../../utils/supabase/client";
-
 export default function AuthForm() {
-  const supabase = createClient();
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  async function handleSignIn() {
-    setLoading(true);
-    setError("");
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
-    }
-    setLoading(false);
-    router.push("/vote");
-    router.refresh();
-  }
-
-  async function handleSignUp() {
-    setLoading(true);
-    setError("");
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (authError) {
-      setError(authError.message);
-      setLoading(false);
-      return;
-    }
-    setLoading(false);
-    router.push("/vote");
-    router.refresh();
-  }
-
   return (
     <div
       style={{
@@ -94,76 +49,12 @@ export default function AuthForm() {
             fontWeight: 400,
           }}
         >
-          Sign in or create an account to start voting
+          Sign in with Google to start voting
         </p>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
-        <input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onFocus={(e) => {
-            e.currentTarget.style.border = "1px solid rgba(100,120,255,0.5)";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(100,120,255,0.1)";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.border = "1px solid rgba(180,180,210,0.35)";
-            e.currentTarget.style.boxShadow = "none";
-          }}
-          style={{
-            width: "100%",
-            padding: "13px 16px",
-            borderRadius: "12px",
-            border: "1px solid rgba(180,180,210,0.35)",
-            background: "rgba(255,255,255,0.45)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            fontSize: "14px",
-            fontWeight: 500,
-            color: "#111",
-            outline: "none",
-            boxSizing: "border-box",
-            fontFamily: "var(--font-geist-sans)",
-            transition: "border 0.2s ease, box-shadow 0.2s ease",
-          }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onFocus={(e) => {
-            e.currentTarget.style.border = "1px solid rgba(100,120,255,0.5)";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(100,120,255,0.1)";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.border = "1px solid rgba(180,180,210,0.35)";
-            e.currentTarget.style.boxShadow = "none";
-          }}
-          style={{
-            width: "100%",
-            padding: "13px 16px",
-            borderRadius: "12px",
-            border: "1px solid rgba(180,180,210,0.35)",
-            background: "rgba(255,255,255,0.45)",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            fontSize: "14px",
-            fontWeight: 500,
-            color: "#111",
-            outline: "none",
-            boxSizing: "border-box",
-            fontFamily: "var(--font-geist-sans)",
-            transition: "border 0.2s ease, box-shadow 0.2s ease",
-          }}
-        />
-      </div>
-
-      <button
-        onClick={handleSignIn}
-        disabled={loading}
+      <a
+        href="/auth/login"
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "translateY(-1px)";
         }}
@@ -182,66 +73,17 @@ export default function AuthForm() {
           fontSize: "15px",
           fontWeight: 600,
           letterSpacing: "-0.01em",
-          cursor: loading ? "not-allowed" : "pointer",
-          marginBottom: "10px",
+          cursor: "pointer",
           boxShadow: "0 4px 20px rgba(100,120,255,0.3)",
           transition: "all 0.2s ease",
           fontFamily: "var(--font-geist-sans)",
-          opacity: loading ? 0.7 : 1,
+          textDecoration: "none",
+          textAlign: "center",
+          display: "block",
         }}
       >
-        {loading ? "Signing in..." : "Sign In"}
-      </button>
-
-      <button
-        onClick={handleSignUp}
-        disabled={loading}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = "rgba(255,255,255,0.6)";
-          e.currentTarget.style.transform = "translateY(-1px)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "rgba(255,255,255,0.35)";
-          e.currentTarget.style.transform = "translateY(0)";
-        }}
-        style={{
-          width: "100%",
-          padding: "14px",
-          borderRadius: "14px",
-          border: "1px solid rgba(180,180,210,0.4)",
-          background: "rgba(255,255,255,0.35)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          color: "#555",
-          fontSize: "15px",
-          fontWeight: 600,
-          letterSpacing: "-0.01em",
-          cursor: loading ? "not-allowed" : "pointer",
-          transition: "all 0.2s ease",
-          fontFamily: "var(--font-geist-sans)",
-          opacity: loading ? 0.7 : 1,
-        }}
-      >
-        Create Account
-      </button>
-
-      {error ? (
-        <div
-          style={{
-            marginTop: "16px",
-            padding: "12px 16px",
-            borderRadius: "12px",
-            background: "rgba(255,68,88,0.08)",
-            border: "1px solid rgba(255,68,88,0.25)",
-            color: "#FF4458",
-            fontSize: "13px",
-            fontWeight: 500,
-            textAlign: "center",
-          }}
-        >
-          {error}
-        </div>
-      ) : null}
+        Continue with Google
+      </a>
     </div>
   );
 }
