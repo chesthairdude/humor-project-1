@@ -458,7 +458,7 @@ export default function VoteDeck({ initialItems = [] }) {
             </div>
           </div>
 
-          <div className="mt-10 flex items-center justify-center gap-[60px]">
+          <div className="mt-14 flex items-center justify-center gap-[60px]">
             <button
               type="button"
               onClick={() => submitVote(-1, "left")}

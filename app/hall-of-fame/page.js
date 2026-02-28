@@ -128,6 +128,7 @@ export default async function HallOfFamePage() {
 
         <Link
           href="/vote"
+          className="sidebar-nav-item"
           style={{
             display: "flex",
             alignItems: "center",
@@ -153,6 +154,7 @@ export default async function HallOfFamePage() {
         </Link>
 
         <div
+          className="sidebar-nav-item active"
           style={{
             display: "flex",
             alignItems: "center",
@@ -177,6 +179,7 @@ export default async function HallOfFamePage() {
 
         <Link
           href="/vote?mode=upload"
+          className="sidebar-nav-item"
           style={{
             display: "flex",
             alignItems: "center",
@@ -204,6 +207,7 @@ export default async function HallOfFamePage() {
         <form action="/auth/signout" method="post">
           <button
             type="submit"
+            className="sidebar-nav-item"
             style={{
               display: "flex",
               alignItems: "center",

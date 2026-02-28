@@ -14,6 +14,7 @@ function shuffleItems(items) {
 }
 
 export default async function VotePage({ searchParams }) {
+  const resolvedSearchParams = await searchParams;
   const supabase = await createClient();
   const {
     data: { session },
@@ -71,7 +72,7 @@ export default async function VotePage({ searchParams }) {
     );
 
   const items = shuffleItems(mappedItems);
-  const mode = searchParams?.mode === "upload" ? "upload" : "vote";
+  const mode = resolvedSearchParams?.mode === "upload" ? "upload" : "vote";
 
   return (
     <VoteWorkspace

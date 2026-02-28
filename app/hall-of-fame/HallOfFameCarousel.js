@@ -16,9 +16,12 @@ export default function HallOfFameCarousel({ items = [] }) {
     setDirection(dir);
     setAnimating(true);
     setTimeout(() => {
-      setIndex((i) =>
-        dir === "right" ? Math.min(i + 1, items.length - 1) : Math.max(i - 1, 0)
-      );
+      setIndex((i) => {
+        if (dir === "right") {
+          return i === items.length - 1 ? 0 : i + 1;
+        }
+        return i === 0 ? items.length - 1 : i - 1;
+      });
       setDirection(null);
       setAnimating(false);
     }, 280);
@@ -85,11 +88,32 @@ export default function HallOfFameCarousel({ items = [] }) {
           transition: "transform 0.28s ease, opacity 0.28s ease",
         }}
       >
-        <img
-          src={current.imageUrl}
-          alt="Hall of fame"
-          style={{ width: "100%", height: "320px", objectFit: "cover", display: "block" }}
-        />
+        <div
+          style={{
+            width: "100%",
+            maxHeight: "320px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+            borderRadius: "20px 20px 0 0",
+            backgroundColor: "var(--card-bg)",
+          }}
+        >
+          <img
+            src={current.imageUrl}
+            alt="Hall of fame"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              objectPosition: "center",
+              backgroundColor: "var(--card-bg)",
+              borderRadius: "20px 20px 0 0",
+              display: "block",
+            }}
+          />
+        </div>
         <div style={{ padding: "20px 24px 24px" }}>
           <p
             style={{
@@ -165,26 +189,26 @@ export default function HallOfFameCarousel({ items = [] }) {
       <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
         <button
           onClick={() => navigate("left")}
-          disabled={index === 0 || animating}
+          disabled={animating}
           style={{
             width: "52px",
             height: "52px",
             borderRadius: "50%",
             border: "1px solid rgba(255,255,255,0.6)",
-            background: index === 0 ? "rgba(200,200,210,0.2)" : "var(--glass-bg)",
+            background: "var(--glass-bg)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
-            boxShadow: index === 0 ? "none" : "0 4px 16px rgba(0,0,0,0.08)",
-            cursor: index === 0 ? "not-allowed" : "pointer",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+            cursor: animating ? "not-allowed" : "pointer",
             fontSize: "20px",
-            color: index === 0 ? "var(--text-tertiary)" : "var(--text-primary)",
+            color: "var(--text-primary)",
             transition: "all 0.2s ease",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
           onMouseEnter={(e) => {
-            if (index > 0) {
+            if (!animating) {
               e.currentTarget.style.transform = "scale(1.08)";
             }
           }}
@@ -224,27 +248,26 @@ export default function HallOfFameCarousel({ items = [] }) {
 
         <button
           onClick={() => navigate("right")}
-          disabled={index === items.length - 1 || animating}
+          disabled={animating}
           style={{
             width: "52px",
             height: "52px",
             borderRadius: "50%",
             border: "1px solid rgba(255,255,255,0.6)",
-            background:
-              index === items.length - 1 ? "rgba(200,200,210,0.2)" : "var(--glass-bg)",
+            background: "var(--glass-bg)",
             backdropFilter: "blur(12px)",
             WebkitBackdropFilter: "blur(12px)",
-            boxShadow: index === items.length - 1 ? "none" : "0 4px 16px rgba(0,0,0,0.08)",
-            cursor: index === items.length - 1 ? "not-allowed" : "pointer",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+            cursor: animating ? "not-allowed" : "pointer",
             fontSize: "20px",
-            color: index === items.length - 1 ? "var(--text-tertiary)" : "var(--text-primary)",
+            color: "var(--text-primary)",
             transition: "all 0.2s ease",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
           onMouseEnter={(e) => {
-            if (index < items.length - 1) {
+            if (!animating) {
               e.currentTarget.style.transform = "scale(1.08)";
             }
           }}

@@ -130,6 +130,21 @@
   border-color: rgba(255, 255, 255, 0.7);
 }
 
+.sidebar-nav-item {
+  transition: all 0.18s ease;
+}
+
+.sidebar-nav-item:hover {
+  background: var(--nav-item-hover) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-1px);
+}
+
+.sidebar-nav-item.active {
+  background: var(--nav-item-hover) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+}
+
 .vote-card {
   background: var(--card-bg);
   border-radius: 20px;
