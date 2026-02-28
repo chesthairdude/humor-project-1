@@ -9,5 +9,5 @@ export async function GET(request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.redirect(new URL("/protected", request.url));
+  return NextResponse.redirect(new URL("/vote", request.url));
 }
