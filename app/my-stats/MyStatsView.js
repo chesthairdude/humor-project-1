@@ -377,9 +377,6 @@ export default function MyStatsView({
                         transition: "height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }}
                     />
-                    <span style={{ fontSize: "11px", fontWeight: 700, color: "#4CDE80", marginTop: "8px" }}>
-                      😂 Funny
-                    </span>
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
@@ -395,9 +392,6 @@ export default function MyStatsView({
                         transition: "height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }}
                     />
-                    <span style={{ fontSize: "11px", fontWeight: 700, color: "#FF4458", marginTop: "8px" }}>
-                      Not Funny 😐
-                    </span>
                   </div>
                 </div>
                 <div style={{ display: "flex", justifyContent: "center", gap: "28px", marginTop: "10px" }}>
@@ -438,6 +432,10 @@ export default function MyStatsView({
                   border: "1px solid var(--glass-border)",
                   boxShadow: "var(--glass-highlight), var(--glass-shadow)",
                   textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <p
