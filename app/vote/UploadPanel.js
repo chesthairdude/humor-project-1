@@ -203,11 +203,13 @@ export default function UploadPanel() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.12)] sm:p-10">
+    <section className="vote-card mx-auto w-full max-w-[400px] p-6">
       <div className="space-y-5">
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.3em] text-cyan-700">Caption Pipeline</p>
-          <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+            Caption Pipeline
+          </p>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
             Upload Image And Generate Captions
           </h2>
         </div>
@@ -247,7 +249,9 @@ export default function UploadPanel() {
 
         {uploadedImageUrl ? (
           <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-700">Uploaded Image</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+              Uploaded Image
+            </p>
             <img
               src={uploadedImageUrl}
               alt="Uploaded preview"
@@ -258,7 +262,7 @@ export default function UploadPanel() {
 
         {generatedCaptions.length > 0 ? (
           <div className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
               Generated Captions
             </p>
             <ul className="space-y-3">

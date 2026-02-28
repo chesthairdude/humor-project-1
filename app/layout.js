@@ -1,9 +1,10 @@
 import "./globals.css";
-import { Nunito } from "next/font/google";
+import { Geist } from "next/font/google";
 
-const nunito = Nunito({
+const geist = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
@@ -13,8 +14,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={nunito.className}>{children}</body>
+    <html lang="en" className={geist.variable}>
+      <body>{children}</body>
     </html>
   );
 }

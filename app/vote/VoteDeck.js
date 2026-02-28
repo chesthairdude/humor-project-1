@@ -35,6 +35,8 @@ export default function VoteDeck({ initialItems = [] }) {
   const [swipeDirection, setSwipeDirection] = useState(null);
   const isSubmittingRef = useRef(false);
   const sentimentTimerRef = useRef(null);
+  const likeCountRef = useRef(0);
+  const dislikeCountRef = useRef(0);
 
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
@@ -64,6 +66,8 @@ export default function VoteDeck({ initialItems = [] }) {
 
       setMeterAnimated(false);
       setFunnyPercent(50);
+      likeCountRef.current = 0;
+      dislikeCountRef.current = 0;
       setLikeCount(0);
       setDislikeCount(0);
 
@@ -79,14 +83,25 @@ export default function VoteDeck({ initialItems = [] }) {
       const likes = (data ?? []).filter((vote) => vote.vote_value === 1).length;
       const dislikes = (data ?? []).filter((vote) => vote.vote_value === -1).length;
 
+      const percent = calculateFunnyPercent(likes, dislikes);
+
+      likeCountRef.current = likes;
+      dislikeCountRef.current = dislikes;
       setLikeCount(likes);
       setDislikeCount(dislikes);
+      setFunnyPercent(percent);
 
       requestAnimationFrame(() => {
         if (!active) {
           return;
         }
         setMeterAnimated(true);
+        requestAnimationFrame(() => {
+          if (!active) {
+            return;
+          }
+          setFunnyPercent(percent);
+        });
       });
     }
 
@@ -96,13 +111,6 @@ export default function VoteDeck({ initialItems = [] }) {
       active = false;
     };
   }, [current?.captionId, supabase]);
-
-  useEffect(() => {
-    if (!meterAnimated) {
-      return;
-    }
-    setFunnyPercent(calculateFunnyPercent(likeCount, dislikeCount));
-  }, [likeCount, dislikeCount, meterAnimated]);
 
   useEffect(() => {
     const nextSentiment = getSentimentCategory(funnyPercent);
@@ -147,9 +155,19 @@ export default function VoteDeck({ initialItems = [] }) {
         (payload) => {
           const voteValue = payload.new?.vote_value;
           if (voteValue === 1) {
-            setLikeCount((count) => count + 1);
+            setLikeCount((count) => {
+              const newLikes = count + 1;
+              likeCountRef.current = newLikes;
+              setFunnyPercent(calculateFunnyPercent(newLikes, dislikeCountRef.current));
+              return newLikes;
+            });
           } else if (voteValue === -1) {
-            setDislikeCount((count) => count + 1);
+            setDislikeCount((count) => {
+              const newDislikes = count + 1;
+              dislikeCountRef.current = newDislikes;
+              setFunnyPercent(calculateFunnyPercent(likeCountRef.current, newDislikes));
+              return newDislikes;
+            });
           }
         }
       )
@@ -228,19 +246,19 @@ export default function VoteDeck({ initialItems = [] }) {
   }
 
   return (
-    <section className="w-full max-w-[380px]">
+    <section className="mx-auto w-full max-w-[400px]">
       {initialItems.length === 0 ? (
-        <div className="rounded-[20px] border border-slate-200 bg-white p-6 text-center text-slate-700 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+        <div className="vote-card p-6 text-center text-slate-700">
           No captions available yet.
         </div>
       ) : !current ? (
-        <div className="rounded-[20px] border border-emerald-200 bg-white p-6 text-center text-emerald-700 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+        <div className="vote-card p-6 text-center text-emerald-700">
           You have voted on all available captions.
         </div>
       ) : (
         <>
           <article
-            className={`overflow-hidden rounded-[20px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
+            className={`vote-card overflow-hidden transition-all duration-300 ease-out ${
               swipeDirection === "left"
                 ? "-translate-x-[120%] opacity-0"
                 : swipeDirection === "right"
@@ -269,7 +287,7 @@ export default function VoteDeck({ initialItems = [] }) {
             </article>
 
           <div className="mt-4 w-full">
-            <div className="mb-2 flex items-center justify-between text-[12px] font-bold leading-none">
+            <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wide leading-none">
               <span className="text-[#4CDE80]">😂 {likeCount} funny</span>
               <span className="text-[#FF4458]">{dislikeCount} not funny 💀</span>
             </div>
@@ -291,7 +309,7 @@ export default function VoteDeck({ initialItems = [] }) {
             </p>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-[60px]">
+          <div className="mt-6 flex items-center justify-center gap-[60px]">
             <button
               type="button"
               onClick={() => submitVote(-1, "left")}
