@@ -342,6 +342,8 @@ export default function HallOfFameCarousel({ items = [] }) {
             →
           </button>
         </div>
+
+        <div style={{ flex: 1 }} />
     </div>
   );
 }
