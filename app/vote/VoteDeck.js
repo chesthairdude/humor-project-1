@@ -7,6 +7,7 @@ import { useTheme } from "../providers/ThemeProvider";
 const SWIPE_DURATION_MS = 320;
 const METER_TRANSITION = "width 0.75s cubic-bezier(0.34, 1.56, 0.64, 1)";
 const SWIPE_THRESHOLD = 60;
+const WHEEL_THRESHOLD = 50;
 let cachedVoteItems = null;
 
 export function setCachedVoteItems(items) {
@@ -43,6 +44,7 @@ export default function VoteDeck({ initialItems = [] }) {
   const [swipeDirection, setSwipeDirection] = useState(null);
   const isSubmittingRef = useRef(false);
   const sentimentTimerRef = useRef(null);
+  const wheelCooldown = useRef(false);
   const likeCountRef = useRef(0);
   const dislikeCountRef = useRef(0);
   const dragRef = useRef({ dragging: false, startX: 0, currentX: 0, offset: 0 });
@@ -152,6 +154,46 @@ export default function VoteDeck({ initialItems = [] }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [current, isSubmitting]);
+
+  useEffect(() => {
+    const card = cardRef.current;
+
+    function handleWheel(event) {
+      if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) {
+        return;
+      }
+
+      if (Math.abs(event.deltaX) < WHEEL_THRESHOLD) {
+        return;
+      }
+
+      if (wheelCooldown.current || isSubmittingRef.current || !current) {
+        return;
+      }
+
+      wheelCooldown.current = true;
+
+      if (event.deltaX > 0) {
+        submitVote(-1, "left");
+      } else {
+        submitVote(1, "right");
+      }
+
+      window.setTimeout(() => {
+        wheelCooldown.current = false;
+      }, 600);
+    }
+
+    if (card) {
+      card.addEventListener("wheel", handleWheel, { passive: true });
+    }
+
+    return () => {
+      if (card) {
+        card.removeEventListener("wheel", handleWheel);
+      }
     };
   }, [current, isSubmitting]);
 
@@ -894,6 +936,17 @@ export default function VoteDeck({ initialItems = [] }) {
                 ✓
               </button>
             </div>
+            <p
+              style={{
+                textAlign: "center",
+                fontSize: "11px",
+                color: "var(--text-tertiary)",
+                marginTop: "12px",
+                letterSpacing: "0.02em",
+              }}
+            >
+              ← swipe · arrow keys · drag →
+            </p>
           </div>
         </>
       )}

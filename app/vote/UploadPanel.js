@@ -64,6 +64,7 @@ export default function UploadPanel({ onResultsChange }) {
   const [generatedCaptions, setGeneratedCaptions] = useState([]);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
   const [localPreviewUrl, setLocalPreviewUrl] = useState("");
 
   useEffect(() => {
@@ -170,6 +171,7 @@ export default function UploadPanel({ onResultsChange }) {
     setGeneratedCaptions([]);
     setUploadedImageUrl("");
     setShowResults(false);
+    setConfirmed(false);
 
     try {
       setPipelineStatus("Getting auth session...");
@@ -291,6 +293,7 @@ export default function UploadPanel({ onResultsChange }) {
       setUploadedImageUrl(cdnUrl);
       setGeneratedCaptions(normalizedCaptions);
       setShowResults(true);
+      setConfirmed(true);
       setPipelineStatus(
         normalizedCaptions.length > 0
           ? `Generated ${normalizedCaptions.length} caption${normalizedCaptions.length === 1 ? "" : "s"}.`
@@ -351,9 +354,9 @@ export default function UploadPanel({ onResultsChange }) {
               padding: "28px 24px",
               animation: "slideInRight 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
             }}
-          >
-            <p
-              style={{
+            >
+              <p
+                style={{
                 fontSize: "10px",
                 fontWeight: 700,
                 letterSpacing: "0.12em",
@@ -362,14 +365,53 @@ export default function UploadPanel({ onResultsChange }) {
                 marginBottom: "16px",
                 fontFamily: "var(--font-geist-sans)",
               }}
-            >
-              Generated Captions
-            </p>
+              >
+                Generated Captions
+              </p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {toFiveCaptions(generatedCaptions).map((record, index) => {
-                const text = getCaptionText(record);
-                const isPlaceholder = Boolean(record?.placeholder);
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {confirmed ? (
+                  <div
+                    style={{
+                      padding: "14px 18px",
+                      borderRadius: "14px",
+                      background: "rgba(76, 222, 128, 0.10)",
+                      border: "1px solid rgba(76, 222, 128, 0.35)",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "10px",
+                    }}
+                  >
+                    <span style={{ fontSize: "18px", flexShrink: 0 }}>✅</span>
+                    <div>
+                      <p
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: 700,
+                          color: "#4CDE80",
+                          margin: "0 0 2px 0",
+                        }}
+                      >
+                        Image and captions saved
+                      </p>
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          color: "var(--text-secondary)",
+                          margin: 0,
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        Your image and the captions below have been added to the voting queue. They
+                        will appear for other users to vote on shortly.
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+
+                {toFiveCaptions(generatedCaptions).map((record, index) => {
+                  const text = getCaptionText(record);
+                  const isPlaceholder = Boolean(record?.placeholder);
                 return (
                   <div
                     key={record?.id ?? `${index}-${text}`}
@@ -426,6 +468,7 @@ export default function UploadPanel({ onResultsChange }) {
                 setCurrentImageId("");
                 setGeneratedCaptions([]);
                 setUploadedImageUrl("");
+                setConfirmed(false);
                 setPipelineError("");
                 setPipelineStatus("");
               }}

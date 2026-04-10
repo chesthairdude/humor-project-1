@@ -455,26 +455,57 @@ export default function MyStatsView({
 
                 <p
                   style={{
-                    fontSize: "18px",
+                    fontSize: "22px",
                     fontWeight: 700,
                     letterSpacing: "-0.02em",
                     color: "var(--text-primary)",
                     marginBottom: "4px",
                   }}
                 >
-                  {consensus.label}
+                  {consensusPercent !== null ? `${consensusPercent}%` : "—"}
                 </p>
 
                 <p
                   style={{
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    color: "var(--text-tertiary)",
-                    marginBottom: "0",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    color: "var(--text-secondary)",
+                    marginBottom: "12px",
                   }}
                 >
-                  {consensusPercent !== null ? `${consensusPercent}% agreeability` : "—"}
+                  {consensus.label}
                 </p>
+
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    borderRadius: "10px",
+                    background: "var(--stats-bg)",
+                    border: "1px solid var(--stats-border)",
+                    marginBottom: "12px",
+                    textAlign: "left",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                      lineHeight: 1.6,
+                      margin: 0,
+                    }}
+                  >
+                    <strong style={{ color: "var(--text-primary)" }}>How this is calculated:</strong>{" "}
+                    For each caption you voted on where a clear majority exists, we check whether
+                    your vote matched the majority. Tied captions are excluded. This percentage
+                    reflects how often your humor judgment aligns with the crowd.
+                  </p>
+                </div>
+
+                {validConsensusVotes > 0 ? (
+                  <p style={{ fontSize: "11px", color: "var(--text-tertiary)", margin: 0 }}>
+                    Based on {validConsensusVotes} captions with a clear majority
+                  </p>
+                ) : null}
               </div>
             </div>
           </div>
