@@ -163,6 +163,8 @@ export default function VoteDeck({ initialItems = [] }) {
         return;
       }
 
+      event.preventDefault();
+
       if (Math.abs(event.deltaX) < WHEEL_THRESHOLD) {
         return;
       }
@@ -184,7 +186,7 @@ export default function VoteDeck({ initialItems = [] }) {
       }, 600);
     }
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
